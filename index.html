@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Auri">
+<title>Auri ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────── */
+:root {
+  --bg:        #0f0f1a;
+  --surface:   #1a1a2e;
+  --surface2:  #22223b;
+  --border:    #2d2d4a;
+  --gold:      #c9a96e;
+  --gold-soft: #e8c98a;
+  --gold-dim:  rgba(201,169,110,0.15);
+  --text:      #f0ece4;
+  --text-muted:#9a94a8;
+  --red:       #e05c6a;
+  --orange:    #e8834a;
+  --yellow:    #f0c040;
+  --green:     #5cc882;
+  --blue:      #5b9cf6;
+  --purple:    #9b7fe8;
+  --radius:    16px;
+  --radius-sm: 10px;
+  --nav-h:     72px;
+  --top-h:     60px;
+}
+
+/* ── RESET ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+
+/* ── LAYOUT ─────────────────────────────────────── */
+#app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; position: relative; }
+#topbar { height: var(--top-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; position: relative; z-index: 10; }
+#topbar-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--gold); flex: 1; }
+#topbar-btn { background: var(--gold-dim); border: 1px solid var(--gold); color: var(--gold); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; font-weight: 600; }
+
+#pages { flex: 1; overflow: hidden; position: relative; }
+.page { position: absolute; inset: 0; overflow-y: auto; padding: 16px 16px calc(var(--nav-h) + 16px); display: none; }
+.page.active { display: block; }
+
+#navbar { height: var(--nav-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 12px; cursor: pointer; border-radius: 12px; transition: background 0.2s; flex: 1; }
+.nav-item:active { background: var(--gold-dim); }
+.nav-item.active .nav-icon { color: var(--gold); }
+.nav-item.active .nav-label { color: var(--gold); font-weight: 600; }
+.nav-icon { font-size: 22px; color: var(--text-muted); transition: color 0.2s; }
+.nav-label { font-size: 10px; color: var(--text-muted); font-weight: 500; transition: color 0.2s; }
+
+/* ── COMPONENTES ────────────────────────────────── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+.card-gold { border-color: var(--gold); background: linear-gradient(135deg, var(--surface) 0%, rgba(201,169,110,0.08) 100%); }
+
+.section-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; }
+.section-title:first-child { margin-top: 0; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: var(--radius-sm); border: none; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; width: 100%; }
+.btn-gold { background: var(--gold); color: #0f0f1a; }
+.btn-gold:active { background: var(--gold-soft); }
+.btn-outline { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); }
+.btn-danger { background: rgba(224,92,106,0.15); color: var(--red); border: 1px solid var(--red); }
+.btn-sm { padding: 7px 14px; font-size: 13px; width: auto; }
+
+.badge { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 11px; font-size: 12px; font-weight: 700; padding: 0 6px; }
+.badge-red { background: rgba(224,92,106,0.2); color: var(--red); }
+.badge-orange { background: rgba(232,131,74,0.2); color: var(--orange); }
+.badge-yellow { background: rgba(240,192,64,0.2); color: var(--yellow); }
+.badge-green { background: rgba(92,200,130,0.2); color: var(--green); }
+.badge-blue { background: rgba(91,156,246,0.2); color: var(--blue); }
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+
+.tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; }
+.form-input { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--gold); }
+.form-input::placeholder { color: var(--text-muted); }
+select.form-input option { background: var(--surface2); }
+
+.row { display: flex; gap: 10px; }
+.row .form-group { flex: 1; }
+
+/* ── ITEM LIST ──────────────────────────────────── */
+.item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; }
+.item-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+.item-sub { font-size: 13px; color: var(--text-muted); }
+.item-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+.icon-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+.icon-btn:active { background: var(--gold-dim); }
+
+/* ── MODALES ────────────────────────────────────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 24px 24px 0 0; padding: 24px 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--gold); margin-bottom: 20px; }
+
+/* ── TOAST ──────────────────────────────────────── */
+#toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--surface2); border: 1px solid var(--gold); color: var(--text); padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 999; transition: transform 0.3s ease; white-space: nowrap; max-width: 90vw; }
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── LOADER ─────────────────────────────────────── */
+.loader { display: flex; align-items: center; justify-content: center; padding: 40px; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── EMPTY STATE ────────────────────────────────── */
+.empty { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-text { font-size: 15px; }
+
+/* ── ALERTAS DASHBOARD ──────────────────────────── */
+.alerta-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; border-left: 3px solid; }
+.alerta-vencido { border-left-color: var(--red); }
+.alerta-hoy { border-left-color: var(--orange); }
+.alerta-semana { border-left-color: var(--yellow); }
+.alerta-ok { border-left-color: var(--green); }
+
+/* ── RESUMEN MÓDULOS ────────────────────────────── */
+.modulo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.modulo-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.modulo-card:active { border-color: var(--gold); background: var(--gold-dim); }
+.modulo-emoji { font-size: 26px; margin-bottom: 6px; }
+.modulo-name { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.modulo-count { font-size: 22px; font-weight: 700; color: var(--text); }
+.modulo-sub { font-size: 11px; color: var(--text-muted); }
+
+/* ── PROGRESO SEMANA ────────────────────────────── */
+.progress-bar { background: var(--surface2); border-radius: 8px; height: 8px; overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-soft)); border-radius: 8px; transition: width 0.5s ease; }
+
+/* ── CHECK ITEM ─────────────────────────────────── */
+.check-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; }
+.check-item.done { opacity: 0.5; }
+.check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+.check-item.done .check-circle { background: var(--green); border-color: var(--green); }
+.check-text { flex: 1; font-size: 15px; }
+.check-item.done .check-text { text-decoration: line-through; color: var(--text-muted); }
+.check-place { font-size: 11px; color: var(--text-muted); background: var(--surface2); padding: 2px 8px; border-radius: 6px; }
+
+/* ── SEMANA VISTA ───────────────────────────────── */
+.dia-grupo { margin-bottom: 16px; }
+.dia-label { font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; padding: 6px 10px; background: var(--gold-dim); border-radius: 6px; margin-bottom: 8px; display: inline-block; }
+
+/* ── FILTROS ────────────────────────────────────── */
+.filtros { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.filtros::-webkit-scrollbar { display: none; }
+.filtro-btn { flex-shrink: 0; padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.filtro-btn.active { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+/* ── HEADER GOLD ────────────────────────────────── */
+.header-gold { background: linear-gradient(135deg, var(--surface) 0%, rgba(201,169,110,0.1) 100%); border: 1px solid var(--gold); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.header-gold-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+.header-gold-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--gold); }
+.header-gold-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── VENCIDO ────────────────────────────────────── */
+.vencido-badge { background: rgba(224,92,106,0.15); color: var(--red); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.pendiente-badge { background: rgba(240,192,64,0.15); color: var(--yellow); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.entregado-badge { background: rgba(92,200,130,0.15); color: var(--green); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.pagado-badge { background: rgba(92,200,130,0.15); color: var(--green); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.hecha-badge { background: rgba(92,200,130,0.15); color: var(--green); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div id="topbar-title">✨ Auri</div>
+    <button class="btn-sm btn btn-outline" id="topbar-add-btn" onclick="openAddModal()" style="width:auto">+ Agregar</button>
+  </div>
+
+  <!-- PAGES -->
+  <div id="pages">
+
+    <!-- ── PÁGINA: INICIO ── -->
+    <div class="page active" id="page-inicio">
+      <div id="dashboard-content">
+        <div class="loader"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── PÁGINA: PRÉSTAMOS ── -->
+    <div class="page" id="page-prestamos">
+      <div class="header-gold">
+        <div class="header-gold-label">💸 Cola de solicitudes</div>
+        <div class="header-gold-value" id="prestamos-total">$0</div>
+        <div class="header-gold-sub" id="prestamos-count">0 solicitudes pendientes</div>
+      </div>
+      <div class="filtros">
+        <button class="filtro-btn active" onclick="filtrarPrestamos('Pendiente', this)">⏳ Pendientes</button>
+        <button class="filtro-btn" onclick="filtrarPrestamos('Entregado', this)">✅ Entregados</button>
+        <button class="filtro-btn" onclick="filtrarPrestamos('todos', this)">📋 Todos</button>
+      </div>
+      <div id="prestamos-list"><div class="loader"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- ── PÁGINA: PAGOS ── -->
+    <div class="page" id="page-pagos">
+      <div class="filtros">
+        <button class="filtro-btn active" onclick="filtrarPagos('todos', this)">📋 Todos</button>
+        <button class="filtro-btn" onclick="filtrarPagos('Pendiente', this)">⏳ Pendientes</button>
+        <button class="filtro-btn" onclick="filtrarPagos('vencido', this)">🔴 Vencidos</button>
+        <button class="filtro-btn" onclick="filtrarPagos('Pagado', this)">✅ Pagados</button>
+      </div>
+      <div id="pagos-list"><div class="loader"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- ── PÁGINA: LISTAS ── -->
+    <div class="page" id="page-listas">
+      <div id="listas-content"><div class="loader"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- ── PÁGINA: MÁS ── -->
+    <div class="page" id="page-mas">
+      <div class="filtros">
+        <button class="filtro-btn active" onclick="cambiarSeccionMas('gestiones', this)">📅 Gestiones</button>
+        <button class="filtro-btn" onclick="cambiarSeccionMas('prestados', this)">📦 Prestados</button>
+        <button class="filtro-btn" onclick="cambiarSeccionMas('semana', this)">🗓️ Semana</button>
+      </div>
+      <div id="mas-content"><div class="loader"><div class="spinner"></div></div></div>
+    </div>
+
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-item active" onclick="navigate('inicio', this)">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Inicio</span>
+    </div>
+    <div class="nav-item" onclick="navigate('prestamos', this)">
+      <span class="nav-icon">💸</span>
+      <span class="nav-label">Préstamos</span>
+    </div>
+    <div class="nav-item" onclick="navigate('pagos', this)">
+      <span class="nav-icon">🔔</span>
+      <span class="nav-label">Pagos</span>
+    </div>
+    <div class="nav-item" onclick="navigate('listas', this)">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Listas</span>
+    </div>
+    <div class="nav-item" onclick="navigate('mas', this)">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Más</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- MODALES                                        -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<!-- Modal Préstamo -->
+<div class="modal-overlay" id="modal-prestamo">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="prestamo-modal-title">💸 Nueva Solicitud</div>
+    <input type="hidden" id="prestamo-id">
+    <div class="form-group">
+      <label class="form-label">Nombre de la persona</label>
+      <input class="form-input" id="prestamo-nombre" placeholder="¿Quién solicitó?" type="text">
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Monto solicitado</label>
+        <input class="form-input" id="prestamo-monto" placeholder="$0" type="number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha solicitud</label>
+        <input class="form-input" id="prestamo-fecha" type="date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notas (opcional)</label>
+      <input class="form-input" id="prestamo-notas" placeholder="Observaciones..." type="text">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-prestamo')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="savePrestamo()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pago -->
+<div class="modal-overlay" id="modal-pago">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="pago-modal-title">🔔 Nuevo Pago</div>
+    <input type="hidden" id="pago-id">
+    <div class="form-group">
+      <label class="form-label">Nombre del pago</label>
+      <input class="form-input" id="pago-nombre" placeholder="Ej: Banco, Luz, Netflix..." type="text">
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Monto</label>
+        <input class="form-input" id="pago-monto" placeholder="$0" type="number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select class="form-input" id="pago-categoria">
+          <option value="Banco">🏦 Banco</option>
+          <option value="Servicio">💡 Servicio</option>
+          <option value="Streaming">📱 Streaming</option>
+          <option value="Arriendo">🏠 Arriendo</option>
+          <option value="Salud">🏥 Salud</option>
+          <option value="Otro">📌 Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Fecha vencimiento</label>
+        <input class="form-input" id="pago-fecha" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Alertar con</label>
+        <select class="form-input" id="pago-alerta">
+          <option value="0">Sin alerta</option>
+          <option value="1">1 día antes</option>
+          <option value="2">2 días antes</option>
+          <option value="3" selected>3 días antes</option>
+          <option value="5">5 días antes</option>
+          <option value="7">1 semana antes</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">¿Es recurrente?</label>
+        <select class="form-input" id="pago-recurrente">
+          <option value="No">No</option>
+          <option value="Mensual">Mensual</option>
+        </select>
+      </div>
+      <div class="form-group" id="pago-diames-group">
+        <label class="form-label">Día del mes</label>
+        <input class="form-input" id="pago-diames" placeholder="Ej: 15" type="number" min="1" max="31">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-pago')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="savePago()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lista -->
+<div class="modal-overlay" id="modal-lista">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🛒 Nueva Lista</div>
+    <div class="form-group">
+      <label class="form-label">Nombre de la lista</label>
+      <input class="form-input" id="lista-nombre" placeholder="Ej: Mercado, Farmacia, Ropa..." type="text">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-lista')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="saveLista()">💾 Crear Lista</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Item Lista -->
+<div class="modal-overlay" id="modal-item">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Agregar ítem</div>
+    <input type="hidden" id="item-lista-id">
+    <input type="hidden" id="item-lista-nombre">
+    <div class="form-group">
+      <label class="form-label">¿Qué necesitas comprar?</label>
+      <input class="form-input" id="item-nombre" placeholder="Ej: Leche, Arroz..." type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">¿Dónde lo compras? (opcional)</label>
+      <input class="form-input" id="item-lugar" placeholder="Ej: Éxito, D1, Jumbo..." type="text">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-item')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="saveItem()">💾 Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Gestión -->
+<div class="modal-overlay" id="modal-gestion">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="gestion-modal-title">📅 Nueva Gestión</div>
+    <input type="hidden" id="gestion-id">
+    <div class="form-group">
+      <label class="form-label">¿Qué hay que hacer?</label>
+      <input class="form-input" id="gestion-desc" placeholder="Ej: Llamar al banco, Cita médica..." type="text">
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-input" id="gestion-tipo">
+          <option value="Diligencia">🏃 Diligencia</option>
+          <option value="Llamada">📞 Llamada</option>
+          <option value="Cita">🏥 Cita médica</option>
+          <option value="Compra">🛍️ Compra/Cotizar</option>
+          <option value="Banco">🏦 Banco</option>
+          <option value="Otro">📌 Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha</label>
+        <input class="form-input" id="gestion-fecha" type="date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Hora (opcional)</label>
+      <input class="form-input" id="gestion-hora" type="time">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notas</label>
+      <input class="form-input" id="gestion-notas" placeholder="Detalles adicionales..." type="text">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-gestion')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="saveGestion()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Prestado -->
+<div class="modal-overlay" id="modal-prestado">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="prestado-modal-title">📦 Nuevo Prestado</div>
+    <input type="hidden" id="prestado-id">
+    <div class="form-group">
+      <label class="form-label">¿Qué prestaste?</label>
+      <input class="form-input" id="prestado-desc" placeholder="Ej: Vestido rojo, Libro, Dinero..." type="text">
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-input" id="prestado-tipo">
+          <option value="Objeto">📦 Objeto</option>
+          <option value="Ropa">👗 Ropa</option>
+          <option value="Dinero">💵 Dinero</option>
+          <option value="Otro">📌 Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">¿A quién?</label>
+        <input class="form-input" id="prestado-persona" placeholder="Nombre" type="text">
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Fecha préstamo</label>
+        <input class="form-input" id="prestado-fecha" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Devolver el (opcional)</label>
+        <input class="form-input" id="prestado-devolucion" type="date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notas</label>
+      <input class="form-input" id="prestado-notas" placeholder="Detalles..." type="text">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-prestado')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="savePrestado()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agregar (selector) -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">¿Qué vas a agregar? ✨</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="btn btn-outline" onclick="openSpecificModal('prestamo')">💸 Préstamo</button>
+      <button class="btn btn-outline" onclick="openSpecificModal('pago')">🔔 Pago</button>
+      <button class="btn btn-outline" onclick="openSpecificModal('lista')">🛒 Lista</button>
+      <button class="btn btn-outline" onclick="openSpecificModal('gestion')">📅 Gestión</button>
+      <button class="btn btn-outline" style="grid-column:1/-1" onclick="openSpecificModal('prestado')">📦 Cosa Prestada</button>
+    </div>
+    <button class="btn btn-danger btn-sm" style="margin-top:12px" onclick="closeModal('modal-add')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SCRIPTS                                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<script>
+const API = 'https://script.google.com/macros/s/AKfycby5_C5A6GaxMKlVLrxdrUbeXUeiUfDYwndLRWsEGKkezyUcgbSvSA6ir0GFx3m5Onb-ew/exec';
+
+// ── ESTADO GLOBAL ────────────────────────────────
+const state = {
+  currentPage: 'inicio',
+  currentSeccionMas: 'gestiones',
+  filtroListaActiva: null,
+  filtroListaFiltro: 'todos',
+  filtroListaLugar: 'todos',
+  data: {
+    prestamos: [], pagos: [], listas: [],
+    items: [], gestiones: [], prestados: [], config: {}
+  }
+};
+
+// ── API ──────────────────────────────────────────
+async function api(params) {
+  try {
+    const url = `${API}?${new URLSearchParams(params)}`;
+    const res = await fetch(url);
+    return await res.json();
+  } catch (e) {
+    return { error: e.toString() };
+  }
+}
+
+async function apiPost(body) {
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    });
+    return await res.json();
+  } catch (e) {
+    return { error: e.toString() };
+  }
+}
+
+// ── UTILS ────────────────────────────────────────
+function fmt(n) {
+  if (!n) return '$0';
+  return '$' + Number(n).toLocaleString('es-CO');
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const [y, m, dia] = d.split('-');
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${dia} ${meses[parseInt(m)-1]} ${y}`;
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function diasVencido(fecha) {
+  if (!fecha) return 0;
+  const diff = new Date(today()) - new Date(fecha);
+  return Math.floor(diff / 86400000);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+function openAddModal() {
+  openModal('modal-add');
+}
+
+function openSpecificModal(tipo) {
+  closeModal('modal-add');
+  clearForm(tipo);
+  openModal('modal-' + tipo);
+}
+
+function clearForm(tipo) {
+  const today_val = today();
+  if (tipo === 'prestamo') {
+    document.getElementById('prestamo-id').value = '';
+    document.getElementById('prestamo-nombre').value = '';
+    document.getElementById('prestamo-monto').value = '';
+    document.getElementById('prestamo-fecha').value = today_val;
+    document.getElementById('prestamo-notas').value = '';
+    document.getElementById('prestamo-modal-title').textContent = '💸 Nueva Solicitud';
+  } else if (tipo === 'pago') {
+    document.getElementById('pago-id').value = '';
+    document.getElementById('pago-nombre').value = '';
+    document.getElementById('pago-monto').value = '';
+    document.getElementById('pago-fecha').value = today_val;
+    document.getElementById('pago-alerta').value = '3';
+    document.getElementById('pago-recurrente').value = 'No';
+    document.getElementById('pago-diames').value = '';
+    document.getElementById('pago-modal-title').textContent = '🔔 Nuevo Pago';
+  } else if (tipo === 'lista') {
+    document.getElementById('lista-nombre').value = '';
+  } else if (tipo === 'gestion') {
+    document.getElementById('gestion-id').value = '';
+    document.getElementById('gestion-desc').value = '';
+    document.getElementById('gestion-fecha').value = today_val;
+    document.getElementById('gestion-hora').value = '';
+    document.getElementById('gestion-notas').value = '';
+    document.getElementById('gestion-modal-title').textContent = '📅 Nueva Gestión';
+  } else if (tipo === 'prestado') {
+    document.getElementById('prestado-id').value = '';
+    document.getElementById('prestado-desc').value = '';
+    document.getElementById('prestado-persona').value = '';
+    document.getElementById('prestado-fecha').value = today_val;
+    document.getElementById('prestado-devolucion').value = '';
+    document.getElementById('prestado-notas').value = '';
+    document.getElementById('prestado-modal-title').textContent = '📦 Nuevo Prestado';
+  }
+}
+
+// ── NAVEGACIÓN ───────────────────────────────────
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  state.currentPage = page;
+  loadPage(page);
+}
+
+function loadPage(page) {
+  if (page === 'inicio') loadDashboard();
+  else if (page === 'prestamos') loadPrestamos();
+  else if (page === 'pagos') loadPagos();
+  else if (page === 'listas') loadListas();
+  else if (page === 'mas') loadMas(state.currentSeccionMas);
+}
+
+// ── DASHBOARD ────────────────────────────────────
+async function loadDashboard() {
+  const el = document.getElementById('dashboard-content');
+  el.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  const res = await api({ action: 'getDashboard' });
+  if (res.error) { el.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Error cargando datos</div></div>'; return; }
+  const d = res.data;
+  const config = (await api({ action: 'getConfig' })).data || {};
+  const nombre = config.nombre_usuario || 'Mi Amor';
+
+  const hora = new Date().getHours();
+  const saludo = hora < 12 ? '🌅 Buenos días' : hora < 18 ? '☀️ Buenas tardes' : '🌙 Buenas noches';
+
+  // Calcular completadas esta semana (gestiones hechas)
+  const gestAll = (await api({ action: 'getAll', sheet: 'Gestiones' })).data || [];
+  const hechas = gestAll.filter(g => g.Estado === 'Hecha').length;
+  const total = gestAll.length;
+  const pct = total > 0 ? Math.round((hechas/total)*100) : 0;
+
+  const { alertas, resumen, proximos_7_dias } = d;
+  const totalVencidos = alertas.vencidos;
+  const totalHoy = alertas.hoy;
+
+  let html = `
+    <div class="card card-gold" style="margin-bottom:16px">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${saludo},</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--gold);margin-bottom:8px">${nombre} 👑</div>
+      <div style="font-size:14px;color:var(--text);font-style:italic">${d.frase}</div>
+    </div>`;
+
+  // Alertas urgentes
+  if (totalVencidos > 0 || totalHoy > 0) {
+    html += `<div class="section-title">⚠️ Requiere atención</div>`;
+    if (totalVencidos > 0) html += `<div class="alerta-item alerta-vencido"><span style="font-size:20px">🔴</span><div><div style="font-weight:600;font-size:14px">Vencidos</div><div style="font-size:13px;color:var(--text-muted)">${totalVencidos} ${totalVencidos===1?'item':' ítems'} vencidos</div></div></div>`;
+    if (totalHoy > 0) html += `<div class="alerta-item alerta-hoy"><span style="font-size:20px">🟠</span><div><div style="font-weight:600;font-size:14px">Vencen hoy</div><div style="font-size:13px;color:var(--text-muted)">${totalHoy} ${totalHoy===1?'ítem':'ítems'} para hoy</div></div></div>`;
+  } else {
+    html += `<div class="alerta-item alerta-ok"><span style="font-size:20px">✅</span><div><div style="font-weight:600;font-size:14px">¡Todo al día!</div><div style="font-size:13px;color:var(--text-muted)">No tienes nada vencido</div></div></div>`;
+  }
+
+  // Progreso semana
+  html += `
+    <div class="card" style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-muted)">📊 Tu progreso</div>
+        <div style="font-size:13px;color:var(--gold);font-weight:700">${hechas}/${total} hechas</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${pct}% completado · ¡${pct>=80?'Excelente gestión 🏆':pct>=50?'Vas muy bien 💪':'Sigue adelante ⭐'}!</div>
+    </div>`;
+
+  // Módulos resumen
+  html += `<div class="section-title">📋 Módulos</div>
+  <div class="modulo-grid">
+    <div class="modulo-card" onclick="navigate('prestamos', document.querySelectorAll('.nav-item')[1])">
+      <div class="modulo-emoji">💸</div>
+      <div class="modulo-name">Préstamos</div>
+      <div class="modulo-count">${resumen.prestamos.pendientes}</div>
+      <div class="modulo-sub">en cola</div>
+    </div>
+    <div class="modulo-card" onclick="navigate('pagos', document.querySelectorAll('.nav-item')[2])">
+      <div class="modulo-emoji">🔔</div>
+      <div class="modulo-name">Pagos</div>
+      <div class="modulo-count">${resumen.pagos.vencidos + resumen.pagos.hoy}</div>
+      <div class="modulo-sub">urgentes</div>
+    </div>
+    <div class="modulo-card" onclick="navigate('listas', document.querySelectorAll('.nav-item')[3])">
+      <div class="modulo-emoji">🛒</div>
+      <div class="modulo-name">Listas</div>
+      <div class="modulo-count">${resumen.listas.items_pendientes}</div>
+      <div class="modulo-sub">ítems por comprar</div>
+    </div>
+    <div class="modulo-card" onclick="navigate('mas', document.querySelectorAll('.nav-item')[4])">
+      <div class="modulo-emoji">📅</div>
+      <div class="modulo-name">Gestiones</div>
+      <div class="modulo-count">${resumen.gestiones.vencidas + resumen.gestiones.hoy}</div>
+      <div class="modulo-sub">urgentes</div>
+    </div>
+  </div>
+  <div class="modulo-card" style="margin-bottom:10px" onclick="navigate('mas', document.querySelectorAll('.nav-item')[4]);cambiarSeccionMas('prestados')">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:26px">📦</span>
+      <div>
+        <div class="modulo-name">Cosas Prestadas</div>
+        <div class="modulo-count" style="font-size:18px">${resumen.prestados.pendientes} pendientes por devolver</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Próximos 7 días
+  if (proximos_7_dias.length > 0) {
+    html += `<div class="section-title">🗓️ Próximos 7 días</div>`;
+    proximos_7_dias.slice(0,5).forEach(item => {
+      html += `<div class="alerta-item alerta-semana">
+        <span style="font-size:18px">${item.emoji}</span>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:14px">${item.texto}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${fmtDate(item.fecha)}${item.monto ? ' · ' + fmt(item.monto) : ''}${item.hora ? ' · ' + item.hora : ''}</div>
+        </div>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+// ── PRÉSTAMOS ────────────────────────────────────
+let filtroPrestamoActual = 'Pendiente';
+
+async function loadPrestamos() {
+  const res = await api({ action: 'getAll', sheet: 'Prestamos' });
+  if (res.error) return;
+  state.data.prestamos = res.data || [];
+  renderPrestamos(filtroPrestamoActual);
+}
+
+function filtrarPrestamos(filtro, btn) {
+  filtroPrestamoActual = filtro;
+  document.querySelectorAll('#page-prestamos .filtro-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPrestamos(filtro);
+}
+
+function renderPrestamos(filtro) {
+  let items = state.data.prestamos;
+  if (filtro !== 'todos') items = items.filter(p => p.Estado === filtro);
+  items.sort((a, b) => a.Fecha_Solicitud > b.Fecha_Solicitud ? 1 : -1);
+
+  const pendientes = state.data.prestamos.filter(p => p.Estado === 'Pendiente');
+  const total = pendientes.reduce((s, p) => s + (Number(p.Monto)||0), 0);
+  document.getElementById('prestamos-total').textContent = fmt(total);
+  document.getElementById('prestamos-count').textContent = `${pendientes.length} solicitud${pendientes.length !== 1 ? 'es' : ''} pendiente${pendientes.length !== 1 ? 's' : ''}`;
+
+  const el = document.getElementById('prestamos-list');
+  if (!items.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">💸</div><div class="empty-text">No hay solicitudes ${filtro === 'todos' ? '' : filtro === 'Pendiente' ? 'pendientes' : 'entregadas'}</div></div>`;
+    return;
+  }
+
+  el.innerHTML = items.map((p, i) => `
+    <div class="item">
+      <div class="item-icon" style="background:var(--gold-dim);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--gold);font-size:14px">${i+1}</div>
+      <div class="item-body">
+        <div class="item-title">${p.Nombre}</div>
+        <div class="item-sub">${fmt(p.Monto)} · ${fmtDate(p.Fecha_Solicitud)}</div>
+        ${p.Notas ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px">${p.Notas}</div>` : ''}
+        <div style="margin-top:6px">
+          ${p.Estado === 'Pendiente' ? '<span class="pendiente-badge">⏳ Pendiente</span>' : '<span class="entregado-badge">✅ Entregado</span>'}
+        </div>
+      </div>
+      <div class="item-actions" style="flex-direction:column;gap:6px">
+        ${p.Estado === 'Pendiente' ? `<div class="icon-btn" onclick="marcarPrestamoEntregado('${p.ID}')" title="Marcar entregado">✅</div>` : ''}
+        <div class="icon-btn" onclick="editPrestamo('${p.ID}')">✏️</div>
+        <div class="icon-btn" onclick="deletePrestamo('${p.ID}')">🗑️</div>
+      </div>
+    </div>`).join('');
+}
+
+async function savePrestamo() {
+  const id = document.getElementById('prestamo-id').value;
+  const data = {
+    Nombre: document.getElementById('prestamo-nombre').value.trim(),
+    Monto: document.getElementById('prestamo-monto').value,
+    Fecha_Solicitud: document.getElementById('prestamo-fecha').value,
+    Estado: 'Pendiente',
+    Notas: document.getElementById('prestamo-notas').value.trim()
+  };
+  if (!data.Nombre || !data.Monto) { showToast('⚠️ Nombre y monto son obligatorios'); return; }
+  const res = id ? await apiPost({ action: 'update', sheet: 'Prestamos', id, data }) : await apiPost({ action: 'add', sheet: 'Prestamos', data });
+  if (res.error) { showToast('❌ Error guardando'); return; }
+  showToast(id ? '✅ Solicitud actualizada' : '✅ Solicitud agregada');
+  closeModal('modal-prestamo');
+  loadPrestamos();
+}
+
+async function marcarPrestamoEntregado(id) {
+  await apiPost({ action: 'update', sheet: 'Prestamos', id, data: { Estado: 'Entregado', Fecha_Entrega: today() } });
+  showToast('✅ Marcado como entregado');
+  loadPrestamos();
+}
+
+function editPrestamo(id) {
+  const p = state.data.prestamos.find(x => x.ID == id);
+  if (!p) return;
+  document.getElementById('prestamo-id').value = p.ID;
+  document.getElementById('prestamo-nombre').value = p.Nombre;
+  document.getElementById('prestamo-monto').value = p.Monto;
+  document.getElementById('prestamo-fecha').value = p.Fecha_Solicitud;
+  document.getElementById('prestamo-notas').value = p.Notas || '';
+  document.getElementById('prestamo-modal-title').textContent = '✏️ Editar Solicitud';
+  openModal('modal-prestamo');
+}
+
+async function deletePrestamo(id) {
+  if (!confirm('¿Eliminar esta solicitud?')) return;
+  await apiPost({ action: 'delete', sheet: 'Prestamos', id });
+  showToast('🗑️ Eliminado');
+  loadPrestamos();
+}
+
+// ── PAGOS ────────────────────────────────────────
+let filtroPagoActual = 'todos';
+
+async function loadPagos() {
+  const res = await api({ action: 'getAll', sheet: 'Pagos' });
+  if (res.error) return;
+  state.data.pagos = res.data || [];
+  renderPagos(filtroPagoActual);
+}
+
+function filtrarPagos(filtro, btn) {
+  filtroPagoActual = filtro;
+  document.querySelectorAll('#page-pagos .filtro-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPagos(filtro);
+}
+
+function renderPagos(filtro) {
+  let items = state.data.pagos;
+  const tod = today();
+  if (filtro === 'Pendiente') items = items.filter(p => p.Estado === 'Pendiente' && p.Fecha_Vencimiento >= tod);
+  else if (filtro === 'vencido') items = items.filter(p => p.Estado === 'Pendiente' && p.Fecha_Vencimiento < tod);
+  else if (filtro === 'Pagado') items = items.filter(p => p.Estado === 'Pagado');
+  items.sort((a, b) => a.Fecha_Vencimiento > b.Fecha_Vencimiento ? 1 : -1);
+
+  const el = document.getElementById('pagos-list');
+  if (!items.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🔔</div><div class="empty-text">No hay pagos en esta categoría</div></div>`;
+    return;
+  }
+
+  const catEmoji = { Banco:'🏦', Servicio:'💡', Streaming:'📱', Arriendo:'🏠', Salud:'🏥', Otro:'📌' };
+
+  el.innerHTML = items.map(p => {
+    const vencido = p.Estado === 'Pendiente' && p.Fecha_Vencimiento < tod;
+    const diasV = vencido ? diasVencido(p.Fecha_Vencimiento) : 0;
+    return `
+    <div class="item" style="${vencido ? 'border-color:var(--red);background:rgba(224,92,106,0.05)' : ''}">
+      <div class="item-icon">${catEmoji[p.Categoria] || '📌'}</div>
+      <div class="item-body">
+        <div class="item-title">${p.Nombre}</div>
+        <div class="item-sub">${fmt(p.Monto)} · Vence: ${fmtDate(p.Fecha_Vencimiento)}</div>
+        ${p.Recurrente === 'Mensual' ? `<div style="font-size:11px;color:var(--text-muted)">🔄 Mensual · día ${p.Dia_Mes}</div>` : ''}
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+          ${vencido ? `<span class="vencido-badge">🔴 Vencido hace ${diasV} día${diasV!==1?'s':''}</span>` : p.Estado === 'Pagado' ? '<span class="pagado-badge">✅ Pagado</span>' : '<span class="pendiente-badge">⏳ Pendiente</span>'}
+        </div>
+      </div>
+      <div class="item-actions" style="flex-direction:column;gap:6px">
+        ${p.Estado === 'Pendiente' ? `<div class="icon-btn" onclick="marcarPagado('${p.ID}')">✅</div>` : ''}
+        <div class="icon-btn" onclick="editPago('${p.ID}')">✏️</div>
+        <div class="icon-btn" onclick="deletePago('${p.ID}')">🗑️</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function savePago() {
+  const id = document.getElementById('pago-id').value;
+  const data = {
+    Nombre: document.getElementById('pago-nombre').value.trim(),
+    Monto: document.getElementById('pago-monto').value,
+    Tipo: 'Manual',
+    Fecha_Vencimiento: document.getElementById('pago-fecha').value,
+    Dias_Alerta: document.getElementById('pago-alerta').value,
+    Estado: 'Pendiente',
+    Recurrente: document.getElementById('pago-recurrente').value,
+    Dia_Mes: document.getElementById('pago-diames').value,
+    Categoria: document.getElementById('pago-categoria').value
+  };
+  if (!data.Nombre) { showToast('⚠️ El nombre es obligatorio'); return; }
+  const res = id ? await apiPost({ action: 'update', sheet: 'Pagos', id, data }) : await apiPost({ action: 'add', sheet: 'Pagos', data });
+  if (res.error) { showToast('❌ Error guardando'); return; }
+  showToast(id ? '✅ Pago actualizado' : '✅ Pago agregado');
+  closeModal('modal-pago');
+  loadPagos();
+}
+
+async function marcarPagado(id) {
+  await apiPost({ action: 'update', sheet: 'Pagos', id, data: { Estado: 'Pagado' } });
+  showToast('✅ Marcado como pagado');
+  loadPagos();
+}
+
+function editPago(id) {
+  const p = state.data.pagos.find(x => x.ID == id);
+  if (!p) return;
+  document.getElementById('pago-id').value = p.ID;
+  document.getElementById('pago-nombre').value = p.Nombre;
+  document.getElementById('pago-monto').value = p.Monto;
+  document.getElementById('pago-fecha').value = p.Fecha_Vencimiento;
+  document.getElementById('pago-alerta').value = p.Dias_Alerta || '3';
+  document.getElementById('pago-recurrente').value = p.Recurrente || 'No';
+  document.getElementById('pago-diames').value = p.Dia_Mes || '';
+  document.getElementById('pago-categoria').value = p.Categoria || 'Otro';
+  document.getElementById('pago-modal-title').textContent = '✏️ Editar Pago';
+  openModal('modal-pago');
+}
+
+async function deletePago(id) {
+  if (!confirm('¿Eliminar este pago?')) return;
+  await apiPost({ action: 'delete', sheet: 'Pagos', id });
+  showToast('🗑️ Eliminado');
+  loadPagos();
+}
+
+// ── LISTAS ───────────────────────────────────────
+async function loadListas() {
+  const [resL, resI] = await Promise.all([
+    api({ action: 'getAll', sheet: 'Listas' }),
+    api({ action: 'getAll', sheet: 'Listas_Items' })
+  ]);
+  state.data.listas = resL.data || [];
+  state.data.items = resI.data || [];
+  if (state.filtroListaActiva) renderListaDetalle(state.filtroListaActiva);
+  else renderListasIndex();
+}
+
+function renderListasIndex() {
+  state.filtroListaActiva = null;
+  const listas = state.data.listas.filter(l => l.Estado === 'Activa');
+  const el = document.getElementById('listas-content');
+
+  if (!listas.length) {
+    el.innerHTML = `
+      <div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">No tienes listas activas</div></div>
+      <button class="btn btn-gold" onclick="openModal('modal-lista')" style="margin-top:12px">+ Nueva Lista</button>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <button class="btn btn-outline" onclick="openModal('modal-lista')" style="margin-bottom:16px">+ Nueva Lista</button>
+    ${listas.map(l => {
+      const items = state.data.items.filter(i => i.Lista_ID === l.ID);
+      const pendientes = items.filter(i => i.Estado === 'Pendiente').length;
+      const comprados = items.filter(i => i.Estado === 'Comprado').length;
+      const pct = items.length > 0 ? Math.round((comprados/items.length)*100) : 0;
+      return `
+      <div class="card" onclick="abrirLista('${l.ID}')" style="cursor:pointer">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-weight:700;font-size:16px">🛒 ${l.Nombre_Lista}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${items.length} ítems</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <div style="font-size:12px;color:var(--text-muted)">${pendientes} por comprar</div>
+          <div style="font-size:12px;color:var(--green)">${comprados} comprados</div>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+function abrirLista(listaId) {
+  state.filtroListaActiva = listaId;
+  state.filtroListaFiltro = 'todos';
+  state.filtroListaLugar = 'todos';
+  renderListaDetalle(listaId);
+}
+
+function renderListaDetalle(listaId) {
+  const lista = state.data.listas.find(l => l.ID === listaId);
+  if (!lista) return;
+  let items = state.data.items.filter(i => i.Lista_ID === listaId);
+
+  // Filtro estado
+  if (state.filtroListaFiltro === 'Pendiente') items = items.filter(i => i.Estado === 'Pendiente');
+  else if (state.filtroListaFiltro === 'Comprado') items = items.filter(i => i.Estado === 'Comprado');
+
+  // Lugares únicos
+  const lugares = [...new Set(state.data.items.filter(i => i.Lista_ID === listaId && i.Lugar_Compra).map(i => i.Lugar_Compra))];
+  if (state.filtroListaLugar !== 'todos') items = items.filter(i => i.Lugar_Compra === state.filtroListaLugar);
+
+  const el = document.getElementById('listas-content');
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div class="icon-btn" onclick="renderListasIndex()">←</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold);flex:1">${lista.Nombre_Lista}</div>
+      <div class="icon-btn" onclick="openAddItemModal('${lista.ID}','${lista.Nombre_Lista}')">➕</div>
+    </div>
+    <div class="filtros">
+      <button class="filtro-btn ${state.filtroListaFiltro==='todos'?'active':''}" onclick="filtroListaEstado('todos',this)">Todos</button>
+      <button class="filtro-btn ${state.filtroListaFiltro==='Pendiente'?'active':''}" onclick="filtroListaEstado('Pendiente',this)">⏳ Pendiente</button>
+      <button class="filtro-btn ${state.filtroListaFiltro==='Comprado'?'active':''}" onclick="filtroListaEstado('Comprado',this)">✅ Comprado</button>
+      ${lugares.map(l => `<button class="filtro-btn ${state.filtroListaLugar===l?'active':''}" onclick="filtroListaLugar('${l}',this)">📍${l}</button>`).join('')}
+    </div>
+    ${!items.length ? '<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">No hay ítems aquí</div></div>' :
+      items.map(i => `
+        <div class="check-item ${i.Estado==='Comprado'?'done':''}" onclick="toggleItem('${i.ID}')">
+          <div class="check-circle">${i.Estado==='Comprado'?'✓':''}</div>
+          <div class="check-text" style="flex:1">${i.Item}</div>
+          ${i.Lugar_Compra ? `<span class="check-place">📍${i.Lugar_Compra}</span>` : ''}
+          <div class="icon-btn" onclick="event.stopPropagation();deleteItem('${i.ID}')">🗑️</div>
+        </div>`).join('')}`;
+}
+
+function filtroListaEstado(f, btn) {
+  state.filtroListaFiltro = f;
+  renderListaDetalle(state.filtroListaActiva);
+}
+
+function filtroListaLugar(l, btn) {
+  state.filtroListaLugar = state.filtroListaLugar === l ? 'todos' : l;
+  renderListaDetalle(state.filtroListaActiva);
+}
+
+function openAddItemModal(listaId, listaNombre) {
+  document.getElementById('item-lista-id').value = listaId;
+  document.getElementById('item-lista-nombre').value = listaNombre;
+  document.getElementById('item-nombre').value = '';
+  document.getElementById('item-lugar').value = '';
+  openModal('modal-item');
+}
+
+async function saveLista() {
+  const nombre = document.getElementById('lista-nombre').value.trim();
+  if (!nombre) { showToast('⚠️ El nombre es obligatorio'); return; }
+  await apiPost({ action: 'add', sheet: 'Listas', data: { Nombre_Lista: nombre, Estado: 'Activa' } });
+  showToast('✅ Lista creada');
+  closeModal('modal-lista');
+  loadListas();
+}
+
+async function saveItem() {
+  const nombre = document.getElementById('item-nombre').value.trim();
+  const listaId = document.getElementById('item-lista-id').value;
+  const listaNombre = document.getElementById('item-lista-nombre').value;
+  const lugar = document.getElementById('item-lugar').value.trim();
+  if (!nombre) { showToast('⚠️ El ítem es obligatorio'); return; }
+  await apiPost({ action: 'add', sheet: 'Listas_Items', data: { Lista_ID: listaId, Nombre_Lista: listaNombre, Item: nombre, Lugar_Compra: lugar, Estado: 'Pendiente' } });
+  showToast('✅ Ítem agregado');
+  closeModal('modal-item');
+  await loadListas();
+  if (state.filtroListaActiva) renderListaDetalle(state.filtroListaActiva);
+}
+
+async function toggleItem(id) {
+  const item = state.data.items.find(i => i.ID == id);
+  if (!item) return;
+  const nuevoEstado = item.Estado === 'Pendiente' ? 'Comprado' : 'Pendiente';
+  await apiPost({ action: 'update', sheet: 'Listas_Items', id, data: { Estado: nuevoEstado } });
+  item.Estado = nuevoEstado;
+  if (state.filtroListaActiva) renderListaDetalle(state.filtroListaActiva);
+}
+
+async function deleteItem(id) {
+  await apiPost({ action: 'delete', sheet: 'Listas_Items', id });
+  state.data.items = state.data.items.filter(i => i.ID != id);
+  if (state.filtroListaActiva) renderListaDetalle(state.filtroListaActiva);
+  showToast('🗑️ Ítem eliminado');
+}
+
+// ── MÁS (GESTIONES / PRESTADOS / SEMANA) ─────────
+function cambiarSeccionMas(seccion, btn) {
+  state.currentSeccionMas = seccion;
+  if (btn) {
+    document.querySelectorAll('#page-mas .filtro-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  loadMas(seccion);
+}
+
+async function loadMas(seccion) {
+  const el = document.getElementById('mas-content');
+  el.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  if (seccion === 'gestiones') {
+    const res = await api({ action: 'getAll', sheet: 'Gestiones' });
+    state.data.gestiones = res.data || [];
+    renderGestiones();
+  } else if (seccion === 'prestados') {
+    const res = await api({ action: 'getAll', sheet: 'Prestados' });
+    state.data.prestados = res.data || [];
+    renderPrestados();
+  } else if (seccion === 'semana') {
+    renderSemana();
+  }
+}
+
+function renderGestiones() {
+  const tod = today();
+  const items = state.data.gestiones.filter(g => g.Estado !== 'Hecha');
+  items.sort((a, b) => a.Fecha > b.Fecha ? 1 : -1);
+
+  const tipoEmoji = { Diligencia:'🏃', Llamada:'📞', Cita:'🏥', Compra:'🛍️', Banco:'🏦', Otro:'📌' };
+  const el = document.getElementById('mas-content');
+
+  el.innerHTML = `
+    <button class="btn btn-outline" onclick="openSpecificModal('gestion')" style="margin-bottom:16px">+ Nueva Gestión</button>
+    ${!items.length ? '<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No hay gestiones pendientes 🎉</div></div>' :
+    items.map(g => {
+      const vencido = g.Fecha && g.Fecha < tod;
+      const diasV = vencido ? diasVencido(g.Fecha) : 0;
+      return `
+      <div class="item" style="${vencido ? 'border-color:var(--red);background:rgba(224,92,106,0.05)' : ''}">
+        <div class="item-icon">${tipoEmoji[g.Tipo] || '📌'}</div>
+        <div class="item-body">
+          <div class="item-title">${g.Descripcion}</div>
+          <div class="item-sub">${fmtDate(g.Fecha)}${g.Hora ? ' · ' + g.Hora : ''}</div>
+          ${g.Notas ? `<div style="font-size:12px;color:var(--text-muted)">${g.Notas}</div>` : ''}
+          <div style="margin-top:5px">
+            ${vencido ? `<span class="vencido-badge">🔴 Vencida hace ${diasV} día${diasV!==1?'s':''}</span>` : '<span class="pendiente-badge">⏳ Pendiente</span>'}
+          </div>
+        </div>
+        <div class="item-actions" style="flex-direction:column;gap:6px">
+          <div class="icon-btn" onclick="marcarGestionHecha('${g.ID}')">✅</div>
+          <div class="icon-btn" onclick="editGestion('${g.ID}')">✏️</div>
+          <div class="icon-btn" onclick="deleteGestion('${g.ID}')">🗑️</div>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+async function saveGestion() {
+  const id = document.getElementById('gestion-id').value;
+  const data = {
+    Descripcion: document.getElementById('gestion-desc').value.trim(),
+    Tipo: document.getElementById('gestion-tipo').value,
+    Fecha: document.getElementById('gestion-fecha').value,
+    Hora: document.getElementById('gestion-hora').value,
+    Estado: 'Pendiente',
+    Notas: document.getElementById('gestion-notas').value.trim()
+  };
+  if (!data.Descripcion) { showToast('⚠️ La descripción es obligatoria'); return; }
+  const res = id ? await apiPost({ action: 'update', sheet: 'Gestiones', id, data }) : await apiPost({ action: 'add', sheet: 'Gestiones', data });
+  if (res.error) { showToast('❌ Error guardando'); return; }
+  showToast(id ? '✅ Gestión actualizada' : '✅ Gestión agregada');
+  closeModal('modal-gestion');
+  loadMas('gestiones');
+}
+
+async function marcarGestionHecha(id) {
+  await apiPost({ action: 'update', sheet: 'Gestiones', id, data: { Estado: 'Hecha' } });
+  showToast('✅ ¡Gestión completada!');
+  loadMas('gestiones');
+}
+
+function editGestion(id) {
+  const g = state.data.gestiones.find(x => x.ID == id);
+  if (!g) return;
+  document.getElementById('gestion-id').value = g.ID;
+  document.getElementById('gestion-desc').value = g.Descripcion;
+  document.getElementById('gestion-tipo').value = g.Tipo;
+  document.getElementById('gestion-fecha').value = g.Fecha;
+  document.getElementById('gestion-hora').value = g.Hora || '';
+  document.getElementById('gestion-notas').value = g.Notas || '';
+  document.getElementById('gestion-modal-title').textContent = '✏️ Editar Gestión';
+  openModal('modal-gestion');
+}
+
+async function deleteGestion(id) {
+  if (!confirm('¿Eliminar esta gestión?')) return;
+  await apiPost({ action: 'delete', sheet: 'Gestiones', id });
+  showToast('🗑️ Eliminada');
+  loadMas('gestiones');
+}
+
+function renderPrestados() {
+  const items = state.data.prestados.filter(p => p.Estado === 'Pendiente');
+  const el = document.getElementById('mas-content');
+  const tipoEmoji = { Objeto:'📦', Ropa:'👗', Dinero:'💵', Otro:'📌' };
+
+  el.innerHTML = `
+    <button class="btn btn-outline" onclick="openSpecificModal('prestado')" style="margin-bottom:16px">+ Nuevo Prestado</button>
+    ${!items.length ? '<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">No tienes cosas prestadas pendientes 🎉</div></div>' :
+    items.map(p => `
+      <div class="item">
+        <div class="item-icon">${tipoEmoji[p.Tipo] || '📦'}</div>
+        <div class="item-body">
+          <div class="item-title">${p.Descripcion}</div>
+          <div class="item-sub">👤 ${p.Persona} · ${fmtDate(p.Fecha_Prestamo)}</div>
+          ${p.Fecha_Devolucion_Esperada ? `<div style="font-size:12px;color:var(--yellow)">📅 Devolver el ${fmtDate(p.Fecha_Devolucion_Esperada)}</div>` : ''}
+          ${p.Notas ? `<div style="font-size:12px;color:var(--text-muted)">${p.Notas}</div>` : ''}
+        </div>
+        <div class="item-actions" style="flex-direction:column;gap:6px">
+          <div class="icon-btn" onclick="marcarPrestadoDevuelto('${p.ID}')">✅</div>
+          <div class="icon-btn" onclick="editPrestado('${p.ID}')">✏️</div>
+          <div class="icon-btn" onclick="deletePrestado('${p.ID}')">🗑️</div>
+        </div>
+      </div>`).join('')}`;
+}
+
+async function savePrestado() {
+  const id = document.getElementById('prestado-id').value;
+  const data = {
+    Tipo: document.getElementById('prestado-tipo').value,
+    Descripcion: document.getElementById('prestado-desc').value.trim(),
+    Persona: document.getElementById('prestado-persona').value.trim(),
+    Fecha_Prestamo: document.getElementById('prestado-fecha').value,
+    Fecha_Devolucion_Esperada: document.getElementById('prestado-devolucion').value,
+    Estado: 'Pendiente',
+    Notas: document.getElementById('prestado-notas').value.trim()
+  };
+  if (!data.Descripcion || !data.Persona) { showToast('⚠️ Descripción y persona son obligatorios'); return; }
+  const res = id ? await apiPost({ action: 'update', sheet: 'Prestados', id, data }) : await apiPost({ action: 'add', sheet: 'Prestados', data });
+  if (res.error) { showToast('❌ Error guardando'); return; }
+  showToast(id ? '✅ Actualizado' : '✅ Prestado registrado');
+  closeModal('modal-prestado');
+  loadMas('prestados');
+}
+
+async function marcarPrestadoDevuelto(id) {
+  await apiPost({ action: 'update', sheet: 'Prestados', id, data: { Estado: 'Devuelto' } });
+  showToast('✅ Marcado como devuelto');
+  loadMas('prestados');
+}
+
+function editPrestado(id) {
+  const p = state.data.prestados.find(x => x.ID == id);
+  if (!p) return;
+  document.getElementById('prestado-id').value = p.ID;
+  document.getElementById('prestado-desc').value = p.Descripcion;
+  document.getElementById('prestado-tipo').value = p.Tipo;
+  document.getElementById('prestado-persona').value = p.Persona;
+  document.getElementById('prestado-fecha').value = p.Fecha_Prestamo;
+  document.getElementById('prestado-devolucion').value = p.Fecha_Devolucion_Esperada || '';
+  document.getElementById('prestado-notas').value = p.Notas || '';
+  document.getElementById('prestado-modal-title').textContent = '✏️ Editar Prestado';
+  openModal('modal-prestado');
+}
+
+async function deletePrestado(id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  await apiPost({ action: 'delete', sheet: 'Prestados', id });
+  showToast('🗑️ Eliminado');
+  loadMas('prestados');
+}
+
+async function renderSemana() {
+  const res = await api({ action: 'getDashboard' });
+  const el = document.getElementById('mas-content');
+  if (res.error || !res.data) { el.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Error cargando</div></div>'; return; }
+
+  const items = res.data.proximos_7_dias;
+  if (!items.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🗓️</div><div class="empty-text">¡Semana libre! No tienes nada próximo 🎉</div></div>';
+    return;
+  }
+
+  const grupos = {};
+  items.forEach(item => {
+    if (!grupos[item.fecha]) grupos[item.fecha] = [];
+    grupos[item.fecha].push(item);
+  });
+
+  const diasNombre = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  let html = '';
+  Object.keys(grupos).sort().forEach(fecha => {
+    const d = new Date(fecha + 'T12:00:00');
+    const label = `${diasNombre[d.getDay()]} ${fmtDate(fecha)}`;
+    html += `<div class="dia-grupo"><span class="dia-label">📅 ${label}</span>`;
+    grupos[fecha].forEach(item => {
+      html += `<div class="item">
+        <div class="item-icon">${item.emoji}</div>
+        <div class="item-body">
+          <div class="item-title">${item.texto}</div>
+          <div class="item-sub">${item.hora || ''}${item.monto ? ' · ' + fmt(item.monto) : ''}</div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+// ── INIT ─────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('prestamo-fecha').value = today();
+  document.getElementById('pago-fecha').value = today();
+  document.getElementById('gestion-fecha').value = today();
+  document.getElementById('prestado-fecha').value = today();
+  loadDashboard();
+});
+</script>
+</body>
+</html>
