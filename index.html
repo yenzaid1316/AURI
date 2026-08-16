@@ -607,7 +607,8 @@ async function loadDashboard(){
     </div>
     <div class="modulo-card" onclick="navigate('pagos',document.querySelectorAll('.nav-item')[2])">
       <div class="modulo-emoji">🔔</div><div class="modulo-name">Pagos</div>
-      <div class="modulo-count">${resumen.pagos.vencidos+resumen.pagos.hoy}</div><div class="modulo-sub">urgentes</div>
+      <div class="modulo-count">${resumen.pagos.total}</div>
+      <div class="modulo-sub">pendiente${resumen.pagos.total!==1?'s':''}${(resumen.pagos.vencidos+resumen.pagos.hoy)>0?` · <span style="color:var(--red);font-weight:700">${resumen.pagos.vencidos+resumen.pagos.hoy} urgente${(resumen.pagos.vencidos+resumen.pagos.hoy)!==1?'s':''}</span>`:' · al día'}</div>
     </div>
     <div class="modulo-card" onclick="navigate('listas',document.querySelectorAll('.nav-item')[3])">
       <div class="modulo-emoji">🛒</div><div class="modulo-name">Listas</div>
@@ -615,7 +616,8 @@ async function loadDashboard(){
     </div>
     <div class="modulo-card" onclick="navigateAMas('gestiones')">
       <div class="modulo-emoji">📅</div><div class="modulo-name">Gestiones</div>
-      <div class="modulo-count">${resumen.gestiones.vencidas+resumen.gestiones.hoy}</div><div class="modulo-sub">urgentes</div>
+      <div class="modulo-count">${resumen.gestiones.total}</div>
+      <div class="modulo-sub">pendiente${resumen.gestiones.total!==1?'s':''}${(resumen.gestiones.vencidas+resumen.gestiones.hoy)>0?` · <span style="color:var(--red);font-weight:700">${resumen.gestiones.vencidas+resumen.gestiones.hoy} urgente${(resumen.gestiones.vencidas+resumen.gestiones.hoy)!==1?'s':''}</span>`:' · al día'}</div>
     </div>
   </div>
   <div class="modulo-card" style="margin-bottom:10px" onclick="navigateAMas('prestados')">
