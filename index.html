@@ -174,8 +174,10 @@ select.form-input option{background:var(--surface2);}
 .v-gan{font-size:12px;color:var(--green);font-weight:600;}
 .v-linea-foot .icon-btn{margin-left:auto;}
 .v-linea-foot .icon-btn + .icon-btn{margin-left:0;}
-.v-acciones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
-.v-acciones .btn{padding:10px 8px;font-size:13px;}
+.v-acciones{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.v-acciones .btn{padding:10px 4px;font-size:12.5px;white-space:nowrap;}
+.v-acc-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:14px;}
+#tarjeta-img{width:100%;border-radius:14px;border:1px solid var(--border);display:block;}
 .cat-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;}
 .cat-dot.yanbal{background:var(--yanbal);}
 .cat-dot.azzorti{background:var(--azzorti);}
@@ -528,6 +530,19 @@ select.form-input option{background:var(--surface2);}
       <button class="btn btn-gold" onclick="ventaGenerarPdf('compartir')">📤 Compartir</button>
     </div>
     <button class="btn btn-danger btn-sm" style="margin-top:12px" onclick="closeModal('modal-pdf')">Cerrar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-tarjeta">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🖼️ Tarjeta de pedido</div>
+    <img id="tarjeta-img" alt="Tarjeta de pedido">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+      <button class="btn btn-outline" onclick="ventaTarjetaGuardar()">⬇️ Guardar</button>
+      <button class="btn btn-gold" onclick="ventaTarjetaCompartir()">📤 Compartir</button>
+    </div>
+    <button class="btn btn-danger btn-sm" style="margin-top:12px" onclick="closeModal('modal-tarjeta')">Cerrar</button>
   </div>
 </div>
 
@@ -1493,8 +1508,8 @@ async function renderSemana(){
 // 🛍️ VENTAS — Catálogos Yanbal / Azzorti
 // ══════════════════════════════════════════════════════════════
 const CATALOGOS={
-  Yanbal:{emoji:'💜',clase:'yanbal',rgb:[124,77,200]},
-  Azzorti:{emoji:'🧡',clase:'azzorti',rgb:[222,116,30]}
+  Yanbal:{emoji:'💜',clase:'yanbal',rgb:[124,77,200],c1:'#6A3CC0',c2:'#A78BFA',tint:'#F1EBFF'},
+  Azzorti:{emoji:'🧡',clase:'azzorti',rgb:[222,116,30],c1:'#D4620F',c2:'#F5A25D',tint:'#FFF0E1'}
 };
 state.ventas={campana:'',catalogo:'todos',vista:'clientes',busqueda:'',abiertos:{},config:{},cargado:false};
 state.data.ventas=[];
@@ -1712,9 +1727,15 @@ function vCardCliente(g){
     </div>`;
   if(abierto){
     h+=`<div class="v-cliente-body">${g.rows.map(vLineaHtml).join('')}
+      <div class="v-acc-label">Mensajes al cliente</div>
+      <div class="v-acciones">
+        <button class="btn btn-outline" data-k="${k}" onclick="ventaWhatsAppCliente(this.dataset.k)">💬 Confirmar</button>
+        <button class="btn btn-outline" data-k="${k}" onclick="ventaTarjetaCliente(this.dataset.k)">🖼️ Tarjeta</button>
+        <button class="btn btn-outline" data-k="${k}" onclick="ventaLlegoCliente(this.dataset.k)">🎉 Ya llegó</button>
+      </div>
+      <div class="v-acc-label">Pedido</div>
       <div class="v-acciones">
         <button class="btn btn-outline" data-k="${k}" onclick="ventaAgregarACliente(this.dataset.k)">➕ Producto</button>
-        <button class="btn btn-outline" data-k="${k}" onclick="ventaWhatsAppCliente(this.dataset.k)">💬 WhatsApp</button>
         <button class="btn btn-outline" data-k="${k}" onclick="ventaClienteEstado(this.dataset.k,'Entregado')">📦 Entregado</button>
         <button class="btn btn-gold" data-k="${k}" onclick="ventaClienteEstado(this.dataset.k,'Pagado')">✅ Pagado</button>
       </div></div>`;
@@ -1984,26 +2005,197 @@ function ventaEliminar(id){
 
 // ── WhatsApp ─────────────────────────────────────
 function abrirWhatsApp(msg){window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
-// El mensaje al cliente NUNCA incluye ganancia ni porcentaje.
+// ── Mensajes al cliente (WhatsApp) ───────────────
+// Regla de oro: NUNCA incluyen ganancia ni porcentaje.
+function vNumEmoji(n){return n<=9?String(n)+'\uFE0F\u20E3':n===10?'\uD83D\uDD1F':n+'.';}
+function vWa(s){return String(s==null?'':s).replace(/[*_~`]/g,'').replace(/\s+/g,' ').trim();}
+function vTotales(rows){
+  const total=rows.reduce((s,r)=>s+r.Total,0),pagado=rows.filter(r=>r.Estado==='Pagado').reduce((s,r)=>s+r.Total,0);
+  return{total,pagado,saldo:total-pagado};
+}
+// 1) Confirmación del pedido
 function ventaMensajeCliente(nombre,rows,campana){
   const cats=ordenarCats([...new Set(rows.map(r=>r.Catalogo))]);
-  let t='Hola '+nombre+' '+(cats.length===1?catInfo(cats[0]).emoji:'✨')+'\n';
+  let t='Hola '+vWa(nombre)+' '+(cats.length===1?catInfo(cats[0]).emoji:'✨')+'\nEste es el resumen de tu pedido:\n';
   cats.forEach(c=>{
     const ls=rows.filter(r=>r.Catalogo===c);
-    t+='\nTu pedido '+c+' – '+campana+':\n';
-    ls.forEach(r=>{t+='• '+r.Codigo+' · '+(r.Descripcion||'Producto')+' · '+r.Cantidad+' × '+vFmt(r.Valor_Unitario)+' = '+vFmt(r.Total)+'\n';});
+    t+='\n*'+vWa(c).toUpperCase()+' · '+vWa(campana)+'*\n\n';
+    ls.forEach((r,i)=>{t+=vNumEmoji(i+1)+' *'+(vWa(r.Descripcion)||vWa(r.Codigo)||'Producto')+'*\n   '+r.Cantidad+' × '+vFmt(r.Valor_Unitario)+' = '+vFmt(r.Total)+'\n';});
     if(cats.length>1)t+='Subtotal '+c+': '+vFmt(ls.reduce((s,r)=>s+r.Total,0))+'\n';
   });
-  const total=rows.reduce((s,r)=>s+r.Total,0),pagado=rows.filter(r=>r.Estado==='Pagado').reduce((s,r)=>s+r.Total,0);
-  t+='\n*Total: '+vFmt(total)+'*';
-  if(pagado>0&&pagado<total)t+='\nPagado: '+vFmt(pagado)+'\n*Saldo: '+vFmt(total-pagado)+'*';
-  else if(pagado>=total&&total>0)t+=' ✅ Pagado';
+  const tt=vTotales(rows);
+  t+='\n💰 *Total: '+vFmt(tt.total)+'*';
+  if(tt.pagado>0&&tt.pagado<tt.total)t+='\nPagado: '+vFmt(tt.pagado)+'\n*Saldo: '+vFmt(tt.saldo)+'*';
+  else if(tt.pagado>=tt.total&&tt.total>0)t+=' ✅ Pagado';
+  // La frase solo tiene sentido mientras el pedido aún no ha llegado
+  if(rows.some(r=>r.Estado==='Pedido'))t+='\n\nTe escribo apenas llegue tu pedido.';
+  return t;
+}
+// 2) Aviso de que el pedido ya llegó
+function ventaMensajeLlego(nombre,rows,campana){
+  const cats=ordenarCats([...new Set(rows.map(r=>r.Catalogo))]);
+  let t='¡Hola '+vWa(nombre)+'! '+(cats.length===1?catInfo(cats[0]).emoji:'✨')+'\n\n';
+  t+='¡Qué emoción! 🎉 Llegó tu pedido de *'+cats.map(c=>vWa(c)).join(' y ')+' · '+vWa(campana)+'* y ya casi puedes disfrutar tus productos ✨\n\n';
+  rows.forEach(r=>{t+='🛍️ '+(vWa(r.Descripcion)||vWa(r.Codigo)||'Producto')+(r.Cantidad>1?' ×'+r.Cantidad:'')+'\n';});
+  const tt=vTotales(rows);
+  if(tt.total>0&&tt.pagado>=tt.total)t+='\n✅ *Tu pedido ya está pagado*';
+  else if(tt.pagado>0)t+='\n💰 *Total: '+vFmt(tt.total)+'*\nSaldo por pagar: *'+vFmt(tt.saldo)+'*';
+  else t+='\n💰 *Total: '+vFmt(tt.total)+'*';
+  t+='\n\nCoordinemos la entrega cuando te quede bien. ¡Gracias por confiar en mí! 💛';
   return t;
 }
 function ventaWhatsAppCliente(k){
   const rows=vRowsCliente(k);if(!rows.length)return;
   abrirWhatsApp(ventaMensajeCliente(rows[0].Cliente,rows,state.ventas.campana));
 }
+function ventaLlegoCliente(k){
+  const rows=vRowsCliente(k);if(!rows.length)return;
+  abrirWhatsApp(ventaMensajeLlego(rows[0].Cliente,rows,state.ventas.campana));
+}
+
+// ── Tarjeta de pedido (imagen) ───────────────────
+function ventaDatosTarjeta(nombre,rows,campana){
+  const cats=ordenarCats([...new Set(rows.map(r=>r.Catalogo))]);
+  const tt=vTotales(rows),ci=catInfo(cats[0]);
+  const tema=cats.length===1?{c1:ci.c1,c2:ci.c2,tint:ci.tint,marca:cats[0].toUpperCase()}:{c1:'#2A2250',c2:'#C9A96E',tint:'#F6EFE0',marca:'YANBAL · AZZORTI'};
+  return{
+    nombre:vWa(nombre),campana:vWa(campana),tema,total:tt.total,pagado:tt.pagado,
+    mostrarLlegada:rows.some(r=>r.Estado==='Pedido'),fecha:fmtDate(hoyLocal()),
+    cats:cats.map(c=>{const ls=rows.filter(r=>r.Catalogo===c);return{catalogo:c,subtotal:ls.reduce((s,r)=>s+r.Total,0),
+      items:ls.map(r=>({nombre:vWa(r.Descripcion)||vWa(r.Codigo)||'Producto',cantidad:r.Cantidad,valor:r.Valor_Unitario,total:r.Total}))};})
+  };
+}
+// <CARD_BUILDER>
+function tarjetaRRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function tarjetaCortar(ctx,txt,maxW){
+  txt=String(txt);if(ctx.measureText(txt).width<=maxW)return txt;
+  while(txt.length>1&&ctx.measureText(txt+'…').width>maxW)txt=txt.slice(0,-1);
+  return txt.trimEnd()+'…';
+}
+function tarjetaEnvolver(ctx,texto,maxW,maxLin){
+  const pal=String(texto).split(/\s+/).filter(Boolean);let lin=[],cur='';
+  pal.forEach(p=>{const t=cur?cur+' '+p:p;if(ctx.measureText(t).width<=maxW)cur=t;else{if(cur)lin.push(cur);cur=p;}});
+  if(cur)lin.push(cur);
+  if(lin.length>maxLin){lin=lin.slice(0,maxLin);lin[maxLin-1]=lin[maxLin-1]+'…';}
+  return lin.map(l=>tarjetaCortar(ctx,l,maxW));
+}
+function ventaDibujarTarjeta(crear,d){
+  const SANS='"DM Sans","Helvetica Neue",Arial,sans-serif',SERIF='"DM Serif Display",Georgia,"Times New Roman",serif';
+  const W=1080,M=36,X0=M+64,X1=W-M-64,CWD=X1-X0,HEAD=285;
+  const t=d.tema;
+  const m=crear(10,10).getContext('2d');
+  // ── 1) Medir ──
+  m.font='700 40px '+SANS;
+  let maxSub=0;d.cats.forEach(c=>c.items.forEach(i=>{maxSub=Math.max(maxSub,m.measureText(vFmt(i.total)).width);}));
+  const rightW=Math.max(maxSub,110),nameW=CWD-rightW-34;
+  m.font='700 38px '+SANS;
+  const bloques=[];let altoItems=0;
+  d.cats.forEach(c=>{
+    if(d.cats.length>1){bloques.push({tipo:'cat',texto:c.catalogo.toUpperCase(),h:84});altoItems+=84;}
+    c.items.forEach((it,idx)=>{
+      m.font='700 38px '+SANS;const lin=tarjetaEnvolver(m,it.nombre,nameW,2);
+      const h=22+lin.length*46+40+22;
+      bloques.push({tipo:'item',lin,det:it.cantidad+' × '+vFmt(it.valor),sub:vFmt(it.total),h,ultimo:idx===c.items.length-1});altoItems+=h;
+    });
+    if(d.cats.length>1){bloques.push({tipo:'subt',texto:'Subtotal '+c.catalogo,monto:vFmt(c.subtotal),h:78});altoItems+=78;}
+  });
+  const parcial=d.pagado>0&&d.pagado<d.total,pagado=d.total>0&&d.pagado>=d.total;
+  const altoTotal=150+(parcial?72:0);
+  const altoPie=(d.mostrarLlegada?84:0)+70;
+  const H=M+HEAD+198+altoItems+34+altoTotal+30+altoPie+M;
+  // ── 2) Dibujar ──
+  const cv=crear(W,H),c=cv.getContext('2d');
+  const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,t.c1);bg.addColorStop(1,'#14142A');c.fillStyle=bg;c.fillRect(0,0,W,H);
+  // tarjeta blanca con sombra
+  c.save();c.shadowColor='rgba(0,0,0,0.38)';c.shadowBlur=46;c.shadowOffsetY=14;c.fillStyle='#FFFDF9';tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.fill();c.restore();
+  // cabecera de color
+  c.save();tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.clip();
+  const hg=c.createLinearGradient(M,M,W-M,M+HEAD);hg.addColorStop(0,t.c1);hg.addColorStop(1,t.c2);c.fillStyle=hg;c.fillRect(M,M,W-2*M,HEAD);
+  c.fillStyle='rgba(255,255,255,0.13)';c.beginPath();c.arc(W-M-70,M+30,190,0,Math.PI*2);c.fill();
+  c.fillStyle='rgba(255,255,255,0.09)';c.beginPath();c.arc(M+150,M+HEAD+10,125,0,Math.PI*2);c.fill();
+  c.fillStyle='rgba(255,255,255,0.10)';c.beginPath();c.arc(W-M-250,M+HEAD-30,60,0,Math.PI*2);c.fill();
+  c.restore();
+  c.textBaseline='alphabetic';c.textAlign='left';
+  if('letterSpacing' in c)c.letterSpacing='9px';
+  c.fillStyle='rgba(255,255,255,0.88)';c.font='700 26px '+SANS;c.fillText('TU PEDIDO',X0,M+84);
+  if('letterSpacing' in c)c.letterSpacing='0px';
+  c.fillStyle='#FFFFFF';c.font='400 '+(d.cats.length>1?72:100)+'px '+SERIF;c.fillText(tarjetaCortar(c,t.marca,CWD),X0,M+190);
+  c.fillStyle='rgba(255,255,255,0.94)';c.font='500 40px '+SANS;c.fillText(tarjetaCortar(c,d.campana,CWD),X0,M+246);
+  // cliente
+  let y=M+HEAD+66;
+  if('letterSpacing' in c)c.letterSpacing='6px';
+  c.fillStyle='#9A94A8';c.font='700 24px '+SANS;c.fillText('PREPARADO PARA',X0,y);
+  if('letterSpacing' in c)c.letterSpacing='0px';
+  c.fillStyle='#1A1A2E';c.font='700 62px '+SANS;c.fillText(tarjetaCortar(c,d.nombre,CWD),X0,y+72);
+  c.fillStyle='#C9A96E';tarjetaRRect(c,X0,y+98,96,6,3);c.fill();
+  // productos
+  y=M+HEAD+198;
+  bloques.forEach(b=>{
+    if(b.tipo==='cat'){
+      c.font='700 26px '+SANS;const tw=c.measureText(b.texto).width+48;
+      c.fillStyle=t.tint;tarjetaRRect(c,X0,y+16,tw,48,24);c.fill();
+      c.fillStyle=t.c1;c.fillText(b.texto,X0+24,y+50);
+    }else if(b.tipo==='subt'){
+      c.fillStyle='#7A7590';c.font='500 30px '+SANS;c.fillText(b.texto,X0,y+46);
+      c.textAlign='right';c.fillStyle='#1F1F33';c.font='700 32px '+SANS;c.fillText(b.monto,X1,y+46);c.textAlign='left';
+    }else{
+      c.fillStyle='#1F1F33';c.font='700 38px '+SANS;
+      b.lin.forEach((l,i)=>c.fillText(l,X0,y+22+46*(i+1)-8));
+      c.fillStyle='#7A7590';c.font='400 32px '+SANS;c.fillText(b.det,X0,y+22+46*b.lin.length+34);
+      c.textAlign='right';c.fillStyle='#1F1F33';c.font='700 40px '+SANS;c.fillText(b.sub,X1,y+22+46-6);c.textAlign='left';
+      if(!b.ultimo){c.fillStyle='#EDE5D6';c.fillRect(X0,y+b.h-2,CWD,2);}
+    }
+    y+=b.h;
+  });
+  // total
+  y+=34;
+  c.fillStyle=t.tint;tarjetaRRect(c,X0-20,y,CWD+40,altoTotal,32);c.fill();
+  if('letterSpacing' in c)c.letterSpacing='7px';
+  c.fillStyle=t.c1;c.font='700 28px '+SANS;c.fillText('TOTAL',X0+14,y+88);
+  if('letterSpacing' in c)c.letterSpacing='0px';
+  c.textAlign='right';c.fillStyle=t.c1;c.font='700 78px '+SANS;c.fillText(vFmt(d.total),X1-10,y+98);c.textAlign='left';
+  if(parcial){
+    c.fillStyle='#5E5A70';c.font='500 30px '+SANS;c.fillText('Pagado: '+vFmt(d.pagado),X0+14,y+150);
+    c.textAlign='right';c.fillStyle=t.c1;c.font='700 32px '+SANS;c.fillText('Saldo: '+vFmt(d.total-d.pagado),X1-10,y+150);c.textAlign='left';
+  }
+  if(pagado){
+    c.font='700 24px '+SANS;const pw=c.measureText('PAGADO').width+40;
+    c.fillStyle='#5CC882';tarjetaRRect(c,X0+214,y+58,pw,40,20);c.fill();c.fillStyle='#0F2A1A';c.fillText('PAGADO',X0+234,y+86);
+  }
+  y+=altoTotal+30;
+  // pie
+  c.textAlign='center';
+  if(d.mostrarLlegada){c.fillStyle='#6D6885';c.font='italic 400 36px '+SANS;c.fillText('Te escribo apenas llegue tu pedido.',W/2,y+50);y+=84;}
+  c.fillStyle='#B3AEC2';c.font='500 26px '+SANS;c.fillText(d.fecha,W/2,y+36);
+  return cv;
+}
+// </CARD_BUILDER>
+let _tarjeta={blob:null,url:'',nombre:''};
+async function ventaTarjetaCliente(k){
+  const rows=vRowsCliente(k);if(!rows.length)return;
+  showSaving('🖼️ Preparando tarjeta...');
+  try{
+    try{await Promise.all([document.fonts.load('400 40px "DM Serif Display"'),document.fonts.load('700 40px "DM Sans"'),document.fonts.load('500 30px "DM Sans"'),document.fonts.load('400 30px "DM Sans"')]);}catch(e){}
+    const cv=ventaDibujarTarjeta((w,h)=>{const e=document.createElement('canvas');e.width=w;e.height=h;return e;},ventaDatosTarjeta(rows[0].Cliente,rows,state.ventas.campana));
+    const blob=await new Promise(res=>cv.toBlob(res,'image/png'));
+    if(!blob)throw new Error('sin imagen');
+    if(_tarjeta.url)URL.revokeObjectURL(_tarjeta.url);
+    _tarjeta={blob,url:URL.createObjectURL(blob),nombre:'Pedido_'+vSlug(rows[0].Cliente)+'_'+vSlug(state.ventas.campana)+'.png'};
+    document.getElementById('tarjeta-img').src=_tarjeta.url;
+    hideSaving();openModal('modal-tarjeta');
+  }catch(e){hideSaving();showToast('❌ No se pudo crear la tarjeta');}
+}
+// Se comparte desde un toque nuevo (la imagen ya está lista) para que el celular permita el menú de compartir
+async function ventaTarjetaCompartir(){
+  if(!_tarjeta.blob)return;
+  try{
+    const file=new File([_tarjeta.blob],_tarjeta.nombre,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  ventaTarjetaGuardar();
+}
+function ventaTarjetaGuardar(){if(!_tarjeta.blob)return;descargarBlob(_tarjeta.blob,_tarjeta.nombre);showToast('⬇️ Tarjeta guardada');}
+
 function ventaMensajeResumen(){
   const v=state.ventas,rows=vRowsCampana(false),r=vResumen(rows),meta=vMeta(v.campana);
   let t='📊 *Resumen '+v.campana+'*\n💰 Vendido: '+vFmt(r.vendido)+'\n🌟 Mi ganancia: '+vFmt(r.ganancia)+'\n📦 Por cobrar: '+vFmt(r.porCobrar)+'\n👥 Clientes: '+r.clientes+' · Unidades: '+r.unidades;
