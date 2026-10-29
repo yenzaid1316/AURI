@@ -135,7 +135,7 @@ select.form-input option{background:var(--surface2);}
 .ver-todos-btn{text-align:center;font-size:13px;color:var(--gold);font-weight:600;padding:10px;cursor:pointer;}
 #modal-confirm{z-index:200;}
 /* ══ MÓDULO VENTAS ══ */
-:root{--yanbal:#a78bfa;--azzorti:#f0924a;}
+:root{--yanbal:#EE742C;--azzorti:#EDD646;}
 .v-head{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
 .v-head select{flex:1;font-weight:700;}
 .v-sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -144,8 +144,8 @@ select.form-input option{background:var(--surface2);}
 .v-sum-line b{color:var(--text);}
 .v-meta{margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,169,110,0.25);}
 .v-meta-link{font-size:13px;color:var(--gold);font-weight:600;cursor:pointer;}
-.filtro-btn.cat-yanbal.active{border-color:var(--yanbal);color:var(--yanbal);background:rgba(167,139,250,0.15);}
-.filtro-btn.cat-azzorti.active{border-color:var(--azzorti);color:var(--azzorti);background:rgba(240,146,74,0.15);}
+.filtro-btn.cat-yanbal.active{border-color:var(--yanbal);color:var(--yanbal);background:rgba(238,116,44,0.16);}
+.filtro-btn.cat-azzorti.active{border-color:var(--azzorti);color:var(--azzorti);background:rgba(237,214,70,0.15);}
 .v-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:14px;}
 .v-seg div{text-align:center;padding:10px 6px;border-radius:9px;font-size:14px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .15s;}
 .v-seg div:active{transform:scale(0.97);}
@@ -212,8 +212,8 @@ select.form-input option{background:var(--surface2);}
 .cat-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .cat-btn{padding:14px 8px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);text-align:center;font-weight:700;font-size:15px;color:var(--text-muted);cursor:pointer;transition:all .15s;}
 .cat-btn:active{transform:scale(0.97);}
-.cat-btn.yanbal.active{border-color:var(--yanbal);color:var(--yanbal);background:rgba(167,139,250,0.15);}
-.cat-btn.azzorti.active{border-color:var(--azzorti);color:var(--azzorti);background:rgba(240,146,74,0.15);}
+.cat-btn.yanbal.active{border-color:var(--yanbal);color:var(--yanbal);background:rgba(238,116,44,0.16);}
+.cat-btn.azzorti.active{border-color:var(--azzorti);color:var(--azzorti);background:rgba(237,214,70,0.15);}
 .v-calc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 14px;}
 .v-calc > div{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;}
 .v-calc .lbl{font-size:12px;color:var(--text-muted);font-weight:600;}
@@ -470,8 +470,8 @@ select.form-input option{background:var(--surface2);}
     <div class="modal-title" id="venta-modal-title">🛍️ Nueva Venta</div>
     <input type="hidden" id="venta-id">
     <div class="cat-toggle">
-      <div class="cat-btn yanbal active" id="cat-btn-Yanbal" onclick="ventaSetCat('Yanbal')">💜 Yanbal</div>
-      <div class="cat-btn azzorti" id="cat-btn-Azzorti" onclick="ventaSetCat('Azzorti')">🧡 Azzorti</div>
+      <div class="cat-btn yanbal active" id="cat-btn-Yanbal" onclick="ventaSetCat('Yanbal')">🧡 Yanbal</div>
+      <div class="cat-btn azzorti" id="cat-btn-Azzorti" onclick="ventaSetCat('Azzorti')">💛 Azzorti</div>
     </div>
     <div class="row">
       <div class="form-group"><label class="form-label">Campaña</label><input class="form-input" id="venta-campana" list="dl-campanas" placeholder="Ej: Campaña 14" type="text"></div>
@@ -1508,8 +1508,11 @@ async function renderSemana(){
 // 🛍️ VENTAS — Catálogos Yanbal / Azzorti
 // ══════════════════════════════════════════════════════════════
 const CATALOGOS={
-  Yanbal:{emoji:'💜',clase:'yanbal',rgb:[124,77,200],c1:'#6A3CC0',c2:'#A78BFA',tint:'#F1EBFF'},
-  Azzorti:{emoji:'🧡',clase:'azzorti',rgb:[222,116,30],c1:'#D4620F',c2:'#F5A25D',tint:'#FFF0E1'}
+  // Colores corporativos: Yanbal naranja #EE742C (logo blanco) · Azzorti amarillo #EDD646 (logo negro)
+  Yanbal:{emoji:'🧡',clase:'yanbal',rgb:[238,116,44],onRgb:[255,255,255],
+    c1:'#EE742C',c2:'#F7955B',tint:'#FDEBDD',acc:'#C4560F',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(255,255,255,0.88)',deco:'255,255,255',decoK:1,bg2:'#C4551A'},
+  Azzorti:{emoji:'💛',clase:'azzorti',rgb:[237,214,70],onRgb:[17,17,17],
+    c1:'#EDD646',c2:'#F7E985',tint:'#FBF4CC',acc:'#1A1A1A',on:'#111111',onSoft:'rgba(17,17,17,0.85)',onTag:'rgba(17,17,17,0.75)',deco:'255,255,255',decoK:2.6,bg2:'#CDB631'}
 };
 state.ventas={campana:'',catalogo:'todos',vista:'clientes',busqueda:'',abiertos:{},config:{},cargado:false};
 state.data.ventas=[];
@@ -1525,7 +1528,7 @@ function hoyLocal(){const d=new Date();return d.getFullYear()+'-'+String(d.getMo
 function pageNum(p){const m=String(p||'').match(/\d+/);return m?parseInt(m[0],10):99999;}
 function vget(id){return document.getElementById(id).value;}
 function ordenarCats(cats){return cats.slice().sort((a,b)=>{const o=c=>c==='Yanbal'?0:c==='Azzorti'?1:2;return o(a)-o(b);});}
-function catInfo(c){return CATALOGOS[c]||{emoji:'🛍️',clase:'',rgb:[90,90,110]};}
+function catInfo(c){return CATALOGOS[c]||{emoji:'🛍️',clase:'',rgb:[90,90,110],onRgb:[255,255,255],c1:'#2A2250',c2:'#C9A96E',tint:'#F6EFE0',acc:'#2A2250',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(255,255,255,0.88)',deco:'255,255,255',decoK:1,bg2:'#14142A'};}
 
 function normalizarVenta(r){
   return Object.assign({},r,{
@@ -1669,8 +1672,8 @@ function renderVentasTop(){
     </div>
     <div class="filtros">
       <button class="filtro-btn ${v.catalogo==='todos'?'active':''}" onclick="ventaFiltroCat('todos')">Todos</button>
-      <button class="filtro-btn cat-yanbal ${v.catalogo==='Yanbal'?'active':''}" onclick="ventaFiltroCat('Yanbal')">💜 Yanbal</button>
-      <button class="filtro-btn cat-azzorti ${v.catalogo==='Azzorti'?'active':''}" onclick="ventaFiltroCat('Azzorti')">🧡 Azzorti</button>
+      <button class="filtro-btn cat-yanbal ${v.catalogo==='Yanbal'?'active':''}" onclick="ventaFiltroCat('Yanbal')">🧡 Yanbal</button>
+      <button class="filtro-btn cat-azzorti ${v.catalogo==='Azzorti'?'active':''}" onclick="ventaFiltroCat('Azzorti')">💛 Azzorti</button>
     </div>
     <div class="v-seg">
       <div class="${v.vista==='clientes'?'active':''}" onclick="ventaVista('clientes')">👥 Clientes</div>
@@ -2057,7 +2060,9 @@ function ventaLlegoCliente(k){
 function ventaDatosTarjeta(nombre,rows,campana){
   const cats=ordenarCats([...new Set(rows.map(r=>r.Catalogo))]);
   const tt=vTotales(rows),ci=catInfo(cats[0]);
-  const tema=cats.length===1?{c1:ci.c1,c2:ci.c2,tint:ci.tint,marca:cats[0].toUpperCase()}:{c1:'#2A2250',c2:'#C9A96E',tint:'#F6EFE0',marca:'YANBAL · AZZORTI'};
+  const tema=cats.length===1
+    ?{c1:ci.c1,c2:ci.c2,tint:ci.tint,acc:ci.acc,on:ci.on,onSoft:ci.onSoft,onTag:ci.onTag,deco:ci.deco,decoK:ci.decoK,bg2:ci.bg2,marca:cats[0].toUpperCase()}
+    :{c1:'#EE742C',c2:'#EDD646',tint:'#FFF3D6',acc:'#1A1A1A',on:'#111111',onSoft:'rgba(17,17,17,0.85)',onTag:'rgba(17,17,17,0.75)',deco:'255,255,255',decoK:2,bg2:'#D9962C',marca:'YANBAL · AZZORTI'};
   return{
     nombre:vWa(nombre),campana:vWa(campana),tema,total:tt.total,pagado:tt.pagado,
     mostrarLlegada:rows.some(r=>r.Estado==='Pedido'),fecha:fmtDate(hoyLocal()),
@@ -2105,22 +2110,22 @@ function ventaDibujarTarjeta(crear,d){
   const H=M+HEAD+198+altoItems+34+altoTotal+30+altoPie+M;
   // ── 2) Dibujar ──
   const cv=crear(W,H),c=cv.getContext('2d');
-  const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,t.c1);bg.addColorStop(1,'#14142A');c.fillStyle=bg;c.fillRect(0,0,W,H);
+  const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,t.c1);bg.addColorStop(1,t.bg2);c.fillStyle=bg;c.fillRect(0,0,W,H);
   // tarjeta blanca con sombra
   c.save();c.shadowColor='rgba(0,0,0,0.38)';c.shadowBlur=46;c.shadowOffsetY=14;c.fillStyle='#FFFDF9';tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.fill();c.restore();
   // cabecera de color
   c.save();tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.clip();
   const hg=c.createLinearGradient(M,M,W-M,M+HEAD);hg.addColorStop(0,t.c1);hg.addColorStop(1,t.c2);c.fillStyle=hg;c.fillRect(M,M,W-2*M,HEAD);
-  c.fillStyle='rgba(255,255,255,0.13)';c.beginPath();c.arc(W-M-70,M+30,190,0,Math.PI*2);c.fill();
-  c.fillStyle='rgba(255,255,255,0.09)';c.beginPath();c.arc(M+150,M+HEAD+10,125,0,Math.PI*2);c.fill();
-  c.fillStyle='rgba(255,255,255,0.10)';c.beginPath();c.arc(W-M-250,M+HEAD-30,60,0,Math.PI*2);c.fill();
+  c.fillStyle='rgba('+t.deco+','+(0.13*t.decoK)+')';c.beginPath();c.arc(W-M-70,M+30,190,0,Math.PI*2);c.fill();
+  c.fillStyle='rgba('+t.deco+','+(0.09*t.decoK)+')';c.beginPath();c.arc(M+150,M+HEAD+10,125,0,Math.PI*2);c.fill();
+  c.fillStyle='rgba('+t.deco+','+(0.10*t.decoK)+')';c.beginPath();c.arc(W-M-250,M+HEAD-30,60,0,Math.PI*2);c.fill();
   c.restore();
   c.textBaseline='alphabetic';c.textAlign='left';
   if('letterSpacing' in c)c.letterSpacing='9px';
-  c.fillStyle='rgba(255,255,255,0.88)';c.font='700 26px '+SANS;c.fillText('TU PEDIDO',X0,M+84);
+  c.fillStyle=t.onTag;c.font='700 26px '+SANS;c.fillText('TU PEDIDO',X0,M+84);
   if('letterSpacing' in c)c.letterSpacing='0px';
-  c.fillStyle='#FFFFFF';c.font='400 '+(d.cats.length>1?72:100)+'px '+SERIF;c.fillText(tarjetaCortar(c,t.marca,CWD),X0,M+190);
-  c.fillStyle='rgba(255,255,255,0.94)';c.font='500 40px '+SANS;c.fillText(tarjetaCortar(c,d.campana,CWD),X0,M+246);
+  c.fillStyle=t.on;c.font='400 '+(d.cats.length>1?72:100)+'px '+SERIF;c.fillText(tarjetaCortar(c,t.marca,CWD),X0,M+190);
+  c.fillStyle=t.onSoft;c.font='500 40px '+SANS;c.fillText(tarjetaCortar(c,d.campana,CWD),X0,M+246);
   // cliente
   let y=M+HEAD+66;
   if('letterSpacing' in c)c.letterSpacing='6px';
@@ -2134,7 +2139,7 @@ function ventaDibujarTarjeta(crear,d){
     if(b.tipo==='cat'){
       c.font='700 26px '+SANS;const tw=c.measureText(b.texto).width+48;
       c.fillStyle=t.tint;tarjetaRRect(c,X0,y+16,tw,48,24);c.fill();
-      c.fillStyle=t.c1;c.fillText(b.texto,X0+24,y+50);
+      c.fillStyle=t.acc;c.fillText(b.texto,X0+24,y+50);
     }else if(b.tipo==='subt'){
       c.fillStyle='#7A7590';c.font='500 30px '+SANS;c.fillText(b.texto,X0,y+46);
       c.textAlign='right';c.fillStyle='#1F1F33';c.font='700 32px '+SANS;c.fillText(b.monto,X1,y+46);c.textAlign='left';
@@ -2151,12 +2156,12 @@ function ventaDibujarTarjeta(crear,d){
   y+=34;
   c.fillStyle=t.tint;tarjetaRRect(c,X0-20,y,CWD+40,altoTotal,32);c.fill();
   if('letterSpacing' in c)c.letterSpacing='7px';
-  c.fillStyle=t.c1;c.font='700 28px '+SANS;c.fillText('TOTAL',X0+14,y+88);
+  c.fillStyle=t.acc;c.font='700 28px '+SANS;c.fillText('TOTAL',X0+14,y+88);
   if('letterSpacing' in c)c.letterSpacing='0px';
-  c.textAlign='right';c.fillStyle=t.c1;c.font='700 78px '+SANS;c.fillText(vFmt(d.total),X1-10,y+98);c.textAlign='left';
+  c.textAlign='right';c.fillStyle=t.acc;c.font='700 78px '+SANS;c.fillText(vFmt(d.total),X1-10,y+98);c.textAlign='left';
   if(parcial){
     c.fillStyle='#5E5A70';c.font='500 30px '+SANS;c.fillText('Pagado: '+vFmt(d.pagado),X0+14,y+150);
-    c.textAlign='right';c.fillStyle=t.c1;c.font='700 32px '+SANS;c.fillText('Saldo: '+vFmt(d.total-d.pagado),X1-10,y+150);c.textAlign='left';
+    c.textAlign='right';c.fillStyle=t.acc;c.font='700 32px '+SANS;c.fillText('Saldo: '+vFmt(d.total-d.pagado),X1-10,y+150);c.textAlign='left';
   }
   if(pagado){
     c.font='700 24px '+SANS;const pw=c.measureText('PAGADO').width+40;
@@ -2257,7 +2262,7 @@ function construirPdf(doc,d,opts){
     espacio(50);
     const uds=g.lineas.reduce((s,l)=>s+l.cantidad,0);
     doc.setFillColor(...g.rgb);doc.roundedRect(M,y,W-2*M,8,1.5,1.5,'F');
-    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(...(g.txt||[255,255,255]));
     doc.text(pdfTxt(g.catalogo).toUpperCase()+'  ·  '+pdfTxt(d.campana),M+3,y+5.6);
     doc.setFontSize(10);doc.text(g.lineas.length+(g.lineas.length===1?' producto':' productos')+'  ·  '+uds+(uds===1?' unidad':' unidades'),W-M-3,y+5.6,{align:'right'});
     y+=10;
@@ -2269,7 +2274,7 @@ function construirPdf(doc,d,opts){
         String(l.cantidad),vFmt(l.valor),vFmt(l.subtotal)]),
       foot:[[{content:'Total del pedido '+pdfTxt(g.catalogo),colSpan:6,styles:{halign:'right'}},{content:vFmt(g.total),styles:{halign:'right'}}]],
       styles:{fontSize:9,cellPadding:2.2,textColor:[40,40,55],lineColor:[220,215,205],lineWidth:0.2,valign:'middle'},
-      headStyles:{fillColor:g.rgb,textColor:255,fontStyle:'bold'},
+      headStyles:{fillColor:g.rgb,textColor:g.txt||[255,255,255],fontStyle:'bold'},
       footStyles:{fillColor:[245,240,230],textColor:[34,34,59],fontStyle:'bold'},
       columnStyles:{0:{cellWidth:9},1:{cellWidth:14,halign:'center'},2:{cellWidth:24},4:{cellWidth:14,halign:'center'},5:{cellWidth:24,halign:'right'},6:{cellWidth:26,halign:'right'}},
       rowPageBreak:'avoid',showFoot:'lastPage',
@@ -2332,7 +2337,7 @@ function ventaDatosPdf(){
   const lineas=consolidarPedido(rows,enviado);
   const grupos=ordenarCats([...new Set(lineas.map(l=>l.catalogo))]).map(c=>{
     const ls=lineas.filter(l=>l.catalogo===c);
-    return{catalogo:c,rgb:catInfo(c).rgb,lineas:ls,total:ls.reduce((s,l)=>s+l.subtotal,0)};
+    return{catalogo:c,rgb:catInfo(c).rgb,txt:catInfo(c).onRgb,lineas:ls,total:ls.reduce((s,l)=>s+l.subtotal,0)};
   });
   const clientes=vAgruparClientes(rows).map(g=>({
     nombre:g.nombre,estado:vEstadoGrupo(g.rows),
