@@ -135,7 +135,7 @@ select.form-input option{background:var(--surface2);}
 .ver-todos-btn{text-align:center;font-size:13px;color:var(--gold);font-weight:600;padding:10px;cursor:pointer;}
 #modal-confirm{z-index:200;}
 /* ══ MÓDULO VENTAS ══ */
-:root{--yanbal:#EE742C;--azzorti:#EDD646;}
+:root{--yanbal:#EE742C;--azzorti:#EDD646;--leonisa:#BD3D44;--leonisa-t:#E8727A;}
 .v-head{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
 .v-head select{flex:1;font-weight:700;}
 .v-sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -146,6 +146,7 @@ select.form-input option{background:var(--surface2);}
 .v-meta-link{font-size:13px;color:var(--gold);font-weight:600;cursor:pointer;}
 .filtro-btn.cat-yanbal.active{border-color:var(--yanbal);color:var(--yanbal);background:rgba(238,116,44,0.16);}
 .filtro-btn.cat-azzorti.active{border-color:var(--azzorti);color:var(--azzorti);background:rgba(237,214,70,0.15);}
+.filtro-btn.cat-leonisa.active{border-color:var(--leonisa-t);color:var(--leonisa-t);background:rgba(189,61,68,0.2);}
 .v-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:14px;}
 .v-seg div{text-align:center;padding:10px 6px;border-radius:9px;font-size:14px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .15s;}
 .v-seg div:active{transform:scale(0.97);}
@@ -181,6 +182,7 @@ select.form-input option{background:var(--surface2);}
 .cat-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;}
 .cat-dot.yanbal{background:var(--yanbal);}
 .cat-dot.azzorti{background:var(--azzorti);}
+.cat-dot.leonisa{background:var(--leonisa);}
 .parcial-badge{background:rgba(232,131,74,0.18);color:var(--orange);font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;}
 .nuevo-badge{background:rgba(224,92,106,0.18);color:var(--red);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;}
 .warn-badge{background:rgba(240,192,64,0.18);color:var(--yellow);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;}
@@ -193,6 +195,7 @@ select.form-input option{background:var(--surface2);}
 .rev-seccion{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:12px;margin:18px 0 10px;font-weight:700;font-size:14px;color:#0f0f1a;}
 .rev-seccion.yanbal{background:var(--yanbal);}
 .rev-seccion.azzorti{background:var(--azzorti);}
+.rev-seccion.leonisa{background:var(--leonisa);color:#F4EFE4;}
 .rev-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;transition:transform .1s;}
 .rev-item:active{transform:scale(0.98);}
 .rev-item.done{opacity:0.5;}
@@ -209,11 +212,12 @@ select.form-input option{background:var(--surface2);}
 .rev-qty .sm{font-size:12px;color:var(--text-muted);margin-top:4px;}
 
 /* Formulario de venta */
-.cat-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.cat-toggle{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
 .cat-btn{padding:14px 8px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);text-align:center;font-weight:700;font-size:15px;color:var(--text-muted);cursor:pointer;transition:all .15s;}
 .cat-btn:active{transform:scale(0.97);}
 .cat-btn.yanbal.active{border-color:var(--yanbal);color:var(--yanbal);background:rgba(238,116,44,0.16);}
 .cat-btn.azzorti.active{border-color:var(--azzorti);color:var(--azzorti);background:rgba(237,214,70,0.15);}
+.cat-btn.leonisa.active{border-color:var(--leonisa-t);color:var(--leonisa-t);background:rgba(189,61,68,0.2);}
 .v-calc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 14px;}
 .v-calc > div{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;}
 .v-calc .lbl{font-size:12px;color:var(--text-muted);font-weight:600;}
@@ -472,6 +476,7 @@ select.form-input option{background:var(--surface2);}
     <div class="cat-toggle">
       <div class="cat-btn yanbal active" id="cat-btn-Yanbal" onclick="ventaSetCat('Yanbal')">🧡 Yanbal</div>
       <div class="cat-btn azzorti" id="cat-btn-Azzorti" onclick="ventaSetCat('Azzorti')">💛 Azzorti</div>
+      <div class="cat-btn leonisa" id="cat-btn-Leonisa" onclick="ventaSetCat('Leonisa')">❤️ Leonisa</div>
     </div>
     <div class="row">
       <div class="form-group"><label class="form-label">Campaña</label><input class="form-input" id="venta-campana" list="dl-campanas" placeholder="Ej: Campaña 14" type="text"></div>
@@ -1505,14 +1510,17 @@ async function renderSemana(){
 }
 
 // ══════════════════════════════════════════════════════════════
-// 🛍️ VENTAS — Catálogos Yanbal / Azzorti
+// 🛍️ VENTAS — Catálogos Yanbal / Azzorti / Leonisa
 // ══════════════════════════════════════════════════════════════
 const CATALOGOS={
   // Colores corporativos: Yanbal naranja #EE742C (logo blanco) · Azzorti amarillo #EDD646 (logo negro)
   Yanbal:{emoji:'🧡',clase:'yanbal',rgb:[238,116,44],onRgb:[255,255,255],
-    c1:'#EE742C',c2:'#F7955B',tint:'#FDEBDD',acc:'#C4560F',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(255,255,255,0.88)',deco:'255,255,255',decoK:1,bg2:'#C4551A'},
+    c1:'#EE742C',c2:'#F7955B',tint:'#FDEBDD',acc:'#C4560F',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(255,255,255,0.88)',deco:'255,255,255',decoK:1,bg2:'#C4551A',paper:'#FFFDF9',ink:'#1A1A2E',line:'#EDE5D6'},
   Azzorti:{emoji:'💛',clase:'azzorti',rgb:[237,214,70],onRgb:[17,17,17],
-    c1:'#EDD646',c2:'#F7E985',tint:'#FBF4CC',acc:'#1A1A1A',on:'#111111',onSoft:'rgba(17,17,17,0.85)',onTag:'rgba(17,17,17,0.75)',deco:'255,255,255',decoK:2.6,bg2:'#CDB631'}
+    c1:'#EDD646',c2:'#F7E985',tint:'#FBF4CC',acc:'#1A1A1A',on:'#111111',onSoft:'rgba(17,17,17,0.85)',onTag:'rgba(17,17,17,0.75)',deco:'255,255,255',decoK:2.6,bg2:'#CDB631',paper:'#FFFDF9',ink:'#1A1A2E',line:'#EDE5D6'},
+  // Leonisa: rojo pasión #BD3D44 · blanco hueso #F4EFE4 · gris antracita #383F47
+  Leonisa:{emoji:'❤️',clase:'leonisa',rgb:[189,61,68],onRgb:[244,239,228],
+    c1:'#BD3D44',c2:'#92292F',tint:'#FFFFFF',acc:'#BD3D44',on:'#F4EFE4',onSoft:'rgba(244,239,228,0.94)',onTag:'rgba(244,239,228,0.82)',deco:'244,239,228',decoK:0.8,bg2:'#8A2A30',paper:'#F4EFE4',ink:'#383F47',line:'#E0D5C2'}
 };
 state.ventas={campana:'',catalogo:'todos',vista:'clientes',busqueda:'',abiertos:{},config:{},cargado:false};
 state.data.ventas=[];
@@ -1527,8 +1535,8 @@ function vFmt(n){const r=Math.round(vNum(n));return(r<0?'-':'')+'$'+String(Math.
 function hoyLocal(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function pageNum(p){const m=String(p||'').match(/\d+/);return m?parseInt(m[0],10):99999;}
 function vget(id){return document.getElementById(id).value;}
-function ordenarCats(cats){return cats.slice().sort((a,b)=>{const o=c=>c==='Yanbal'?0:c==='Azzorti'?1:2;return o(a)-o(b);});}
-function catInfo(c){return CATALOGOS[c]||{emoji:'🛍️',clase:'',rgb:[90,90,110],onRgb:[255,255,255],c1:'#2A2250',c2:'#C9A96E',tint:'#F6EFE0',acc:'#2A2250',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(255,255,255,0.88)',deco:'255,255,255',decoK:1,bg2:'#14142A'};}
+function ordenarCats(cats){const ks=Object.keys(CATALOGOS);return cats.slice().sort((a,b)=>{const o=c=>{const i=ks.indexOf(c);return i<0?99:i;};return o(a)-o(b);});}
+function catInfo(c){return CATALOGOS[c]||{emoji:'🛍️',clase:'',rgb:[90,90,110],onRgb:[255,255,255],c1:'#2A2250',c2:'#C9A96E',tint:'#F6EFE0',acc:'#2A2250',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(255,255,255,0.88)',deco:'255,255,255',decoK:1,bg2:'#14142A',paper:'#FFFDF9',ink:'#1A1A2E',line:'#EDE5D6'};}
 
 function normalizarVenta(r){
   return Object.assign({},r,{
@@ -1674,6 +1682,7 @@ function renderVentasTop(){
       <button class="filtro-btn ${v.catalogo==='todos'?'active':''}" onclick="ventaFiltroCat('todos')">Todos</button>
       <button class="filtro-btn cat-yanbal ${v.catalogo==='Yanbal'?'active':''}" onclick="ventaFiltroCat('Yanbal')">🧡 Yanbal</button>
       <button class="filtro-btn cat-azzorti ${v.catalogo==='Azzorti'?'active':''}" onclick="ventaFiltroCat('Azzorti')">💛 Azzorti</button>
+      <button class="filtro-btn cat-leonisa ${v.catalogo==='Leonisa'?'active':''}" onclick="ventaFiltroCat('Leonisa')">❤️ Leonisa</button>
     </div>
     <div class="v-seg">
       <div class="${v.vista==='clientes'?'active':''}" onclick="ventaVista('clientes')">👥 Clientes</div>
@@ -1881,7 +1890,7 @@ function ventaUltimoPct(c){
   return'';
 }
 function ventaPintarCat(){
-  ['Yanbal','Azzorti'].forEach(c=>document.getElementById('cat-btn-'+c).classList.toggle('active',c===ventaCat));
+  Object.keys(CATALOGOS).forEach(c=>document.getElementById('cat-btn-'+c).classList.toggle('active',c===ventaCat));
 }
 function ventaSetCat(c){
   ventaCat=c;ventaPintarCat();
@@ -2057,12 +2066,25 @@ function ventaLlegoCliente(k){
 }
 
 // ── Tarjeta de pedido (imagen) ───────────────────
+// Cliente con productos de varias marcas: degradado entre los colores de cada una
+function ventaTemaMixto(cats){
+  const inf=cats.map(catInfo),oscuro=cats.indexOf('Azzorti')>=0,tres=cats.length>2;
+  const yaz=cats.length===2&&cats[0]==='Yanbal'&&cats[1]==='Azzorti';
+  // Amarillo + rojo no combinan para leer texto encima: tema neutro de Auri (azul noche y dorado)
+  if(cats.indexOf('Azzorti')>=0&&cats.indexOf('Leonisa')>=0)
+    return{c1:'#23233F',c2:'#383F47',tint:'#F6EFE0',acc:'#1A1A2E',on:'#FFFFFF',onSoft:'rgba(255,255,255,0.94)',onTag:'rgba(201,169,110,0.95)',
+      deco:'201,169,110',decoK:1.1,bg2:'#14142A',paper:'#FFFDF9',ink:'#1A1A2E',line:'#EDE5D6',marca:cats.map(c=>c.toUpperCase()).join(' · '),tres};
+  return{c1:inf[0].c1,c2:inf[inf.length-1].c1,tint:yaz?'#FFF3D6':'#FFF3E6',acc:'#1A1A1A',
+    on:oscuro?'#111111':'#FFFFFF',onSoft:oscuro?'rgba(17,17,17,0.85)':'rgba(255,255,255,0.94)',onTag:oscuro?'rgba(17,17,17,0.75)':'rgba(255,255,255,0.88)',
+    deco:'255,255,255',decoK:2,bg2:yaz?'#D9962C':inf[inf.length-1].bg2,paper:'#FFFDF9',ink:'#1A1A2E',line:'#EDE5D6',
+    marca:cats.map(c=>c.toUpperCase()).join(' · '),tres};
+}
 function ventaDatosTarjeta(nombre,rows,campana){
   const cats=ordenarCats([...new Set(rows.map(r=>r.Catalogo))]);
   const tt=vTotales(rows),ci=catInfo(cats[0]);
   const tema=cats.length===1
-    ?{c1:ci.c1,c2:ci.c2,tint:ci.tint,acc:ci.acc,on:ci.on,onSoft:ci.onSoft,onTag:ci.onTag,deco:ci.deco,decoK:ci.decoK,bg2:ci.bg2,marca:cats[0].toUpperCase()}
-    :{c1:'#EE742C',c2:'#EDD646',tint:'#FFF3D6',acc:'#1A1A1A',on:'#111111',onSoft:'rgba(17,17,17,0.85)',onTag:'rgba(17,17,17,0.75)',deco:'255,255,255',decoK:2,bg2:'#D9962C',marca:'YANBAL · AZZORTI'};
+    ?{c1:ci.c1,c2:ci.c2,tint:ci.tint,acc:ci.acc,on:ci.on,onSoft:ci.onSoft,onTag:ci.onTag,deco:ci.deco,decoK:ci.decoK,bg2:ci.bg2,paper:ci.paper,ink:ci.ink,line:ci.line,marca:cats[0].toUpperCase()}
+    :ventaTemaMixto(cats);
   return{
     nombre:vWa(nombre),campana:vWa(campana),tema,total:tt.total,pagado:tt.pagado,
     mostrarLlegada:rows.some(r=>r.Estado==='Pedido'),fecha:fmtDate(hoyLocal()),
@@ -2112,7 +2134,7 @@ function ventaDibujarTarjeta(crear,d){
   const cv=crear(W,H),c=cv.getContext('2d');
   const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,t.c1);bg.addColorStop(1,t.bg2);c.fillStyle=bg;c.fillRect(0,0,W,H);
   // tarjeta blanca con sombra
-  c.save();c.shadowColor='rgba(0,0,0,0.38)';c.shadowBlur=46;c.shadowOffsetY=14;c.fillStyle='#FFFDF9';tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.fill();c.restore();
+  c.save();c.shadowColor='rgba(0,0,0,0.38)';c.shadowBlur=46;c.shadowOffsetY=14;c.fillStyle=t.paper||'#FFFDF9';tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.fill();c.restore();
   // cabecera de color
   c.save();tarjetaRRect(c,M,M,W-2*M,H-2*M,46);c.clip();
   const hg=c.createLinearGradient(M,M,W-M,M+HEAD);hg.addColorStop(0,t.c1);hg.addColorStop(1,t.c2);c.fillStyle=hg;c.fillRect(M,M,W-2*M,HEAD);
@@ -2124,14 +2146,14 @@ function ventaDibujarTarjeta(crear,d){
   if('letterSpacing' in c)c.letterSpacing='9px';
   c.fillStyle=t.onTag;c.font='700 26px '+SANS;c.fillText('TU PEDIDO',X0,M+84);
   if('letterSpacing' in c)c.letterSpacing='0px';
-  c.fillStyle=t.on;c.font='400 '+(d.cats.length>1?72:100)+'px '+SERIF;c.fillText(tarjetaCortar(c,t.marca,CWD),X0,M+190);
+  c.fillStyle=t.on;c.font='400 '+(d.cats.length>2?52:d.cats.length>1?72:100)+'px '+SERIF;c.fillText(tarjetaCortar(c,t.marca,CWD),X0,M+190);
   c.fillStyle=t.onSoft;c.font='500 40px '+SANS;c.fillText(tarjetaCortar(c,d.campana,CWD),X0,M+246);
   // cliente
   let y=M+HEAD+66;
   if('letterSpacing' in c)c.letterSpacing='6px';
   c.fillStyle='#9A94A8';c.font='700 24px '+SANS;c.fillText('PREPARADO PARA',X0,y);
   if('letterSpacing' in c)c.letterSpacing='0px';
-  c.fillStyle='#1A1A2E';c.font='700 62px '+SANS;c.fillText(tarjetaCortar(c,d.nombre,CWD),X0,y+72);
+  c.fillStyle=t.ink||'#1A1A2E';c.font='700 62px '+SANS;c.fillText(tarjetaCortar(c,d.nombre,CWD),X0,y+72);
   c.fillStyle='#C9A96E';tarjetaRRect(c,X0,y+98,96,6,3);c.fill();
   // productos
   y=M+HEAD+198;
@@ -2142,13 +2164,13 @@ function ventaDibujarTarjeta(crear,d){
       c.fillStyle=t.acc;c.fillText(b.texto,X0+24,y+50);
     }else if(b.tipo==='subt'){
       c.fillStyle='#7A7590';c.font='500 30px '+SANS;c.fillText(b.texto,X0,y+46);
-      c.textAlign='right';c.fillStyle='#1F1F33';c.font='700 32px '+SANS;c.fillText(b.monto,X1,y+46);c.textAlign='left';
+      c.textAlign='right';c.fillStyle=t.ink||'#1F1F33';c.font='700 32px '+SANS;c.fillText(b.monto,X1,y+46);c.textAlign='left';
     }else{
-      c.fillStyle='#1F1F33';c.font='700 38px '+SANS;
+      c.fillStyle=t.ink||'#1F1F33';c.font='700 38px '+SANS;
       b.lin.forEach((l,i)=>c.fillText(l,X0,y+22+46*(i+1)-8));
       c.fillStyle='#7A7590';c.font='400 32px '+SANS;c.fillText(b.det,X0,y+22+46*b.lin.length+34);
-      c.textAlign='right';c.fillStyle='#1F1F33';c.font='700 40px '+SANS;c.fillText(b.sub,X1,y+22+46-6);c.textAlign='left';
-      if(!b.ultimo){c.fillStyle='#EDE5D6';c.fillRect(X0,y+b.h-2,CWD,2);}
+      c.textAlign='right';c.fillStyle=t.ink||'#1F1F33';c.font='700 40px '+SANS;c.fillText(b.sub,X1,y+22+46-6);c.textAlign='left';
+      if(!b.ultimo){c.fillStyle=t.line||'#EDE5D6';c.fillRect(X0,y+b.h-2,CWD,2);}
     }
     y+=b.h;
   });
