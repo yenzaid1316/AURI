@@ -231,6 +231,17 @@ select.form-input option{background:var(--surface2);}
 .v-setup-box{text-align:center;padding:32px 20px;}
 .v-setup-box code{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;color:var(--gold);font-size:13px;}
 
+
+.v-brand-tag{font-size:12.5px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.v-brand-tag.yanbal{color:var(--yanbal);}
+.v-brand-tag.azzorti{color:var(--azzorti);}
+.v-brand-tag.leonisa{color:var(--leonisa-t);}
+.v-marca-badge{display:inline-block;padding:3px 11px;border-radius:12px;font-size:12px;font-weight:700;margin-top:8px;}
+.v-marca-badge.yanbal{background:rgba(238,116,44,0.16);color:var(--yanbal);}
+.v-marca-badge.azzorti{background:rgba(237,214,70,0.15);color:var(--azzorti);}
+.v-marca-badge.leonisa{background:rgba(189,61,68,0.2);color:var(--leonisa-t);}
+#mover-aviso{font-size:12.5px;color:var(--text-muted);line-height:1.55;margin:2px 0 12px;}
+#mover-aviso div{margin-bottom:4px;}
 </style>
 </head>
 <body>
@@ -466,22 +477,14 @@ select.form-input option{background:var(--surface2);}
 </div>
 
 <datalist id="dl-clientes"></datalist>
-<datalist id="dl-campanas"></datalist>
 
 <div class="modal-overlay" id="modal-venta">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="venta-modal-title">🛍️ Nueva Venta</div>
     <input type="hidden" id="venta-id">
-    <div class="cat-toggle">
-      <div class="cat-btn yanbal active" id="cat-btn-Yanbal" onclick="ventaSetCat('Yanbal')">🧡 Yanbal</div>
-      <div class="cat-btn azzorti" id="cat-btn-Azzorti" onclick="ventaSetCat('Azzorti')">💛 Azzorti</div>
-      <div class="cat-btn leonisa" id="cat-btn-Leonisa" onclick="ventaSetCat('Leonisa')">❤️ Leonisa</div>
-    </div>
-    <div class="row">
-      <div class="form-group"><label class="form-label">Campaña</label><input class="form-input" id="venta-campana" list="dl-campanas" placeholder="Ej: Campaña 14" type="text"></div>
-      <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="venta-cliente" list="dl-clientes" placeholder="¿Quién pide?" type="text" autocomplete="off"></div>
-    </div>
+    <div class="form-group"><label class="form-label">Campaña</label><select class="form-input" id="venta-campana" onchange="ventaCampanaForm()"></select><div id="venta-marca-badge" class="v-marca-badge"></div></div>
+    <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="venta-cliente" list="dl-clientes" placeholder="¿Quién pide?" type="text" autocomplete="off"></div>
     <div class="row">
       <div class="form-group"><label class="form-label">Código</label><input class="form-input" id="venta-codigo" placeholder="Código" type="text" autocomplete="off" onchange="ventaAutocompletar()"></div>
       <div class="form-group"><label class="form-label">Pág. en la revista</label><input class="form-input" id="venta-pagina" placeholder="Ej: 45" type="text" oninput="ventaCampoManual(this)"></div>
@@ -508,6 +511,39 @@ select.form-input option{background:var(--surface2);}
       <button class="btn btn-gold" style="flex:2" onclick="saveVenta(false)">💾 Guardar</button>
     </div>
     <button class="btn btn-outline" id="btn-venta-otro" style="margin-top:10px" onclick="saveVenta(true)">➕ Guardar y agregar otro</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-campana">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🛍️ Nueva campaña</div>
+    <div class="form-group"><label class="form-label">¿De qué revista es?</label>
+      <div class="cat-toggle" style="margin-bottom:0">
+        <div class="cat-btn yanbal" id="camp-btn-Yanbal" onclick="campanaSetMarca('Yanbal')">🧡 Yanbal</div>
+        <div class="cat-btn azzorti" id="camp-btn-Azzorti" onclick="campanaSetMarca('Azzorti')">💛 Azzorti</div>
+        <div class="cat-btn leonisa" id="camp-btn-Leonisa" onclick="campanaSetMarca('Leonisa')">❤️ Leonisa</div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Nombre de la campaña</label><input class="form-input" id="campana-nombre" placeholder="Ej: Campaña 14" type="text" autocomplete="off"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-campana')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="campanaCrear()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-mover">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">↪️ Mover a otra campaña</div>
+    <div class="item-sub" id="mover-desc" style="margin-bottom:12px"></div>
+    <div class="form-group"><label class="form-label">Campaña de destino</label><select class="form-input" id="mover-destino" onchange="ventaMoverAviso()"></select></div>
+    <div id="mover-aviso"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="closeModal('modal-mover')">Cancelar</button>
+      <button class="btn btn-gold" style="flex:2" onclick="ventaMoverConfirmar()">Mover</button>
+    </div>
   </div>
 </div>
 
@@ -1522,7 +1558,8 @@ const CATALOGOS={
   Leonisa:{emoji:'❤️',clase:'leonisa',rgb:[189,61,68],onRgb:[244,239,228],
     c1:'#BD3D44',c2:'#92292F',tint:'#FFFFFF',acc:'#BD3D44',on:'#F4EFE4',onSoft:'rgba(244,239,228,0.94)',onTag:'rgba(244,239,228,0.82)',deco:'244,239,228',decoK:0.8,bg2:'#8A2A30',paper:'#F4EFE4',ink:'#383F47',line:'#E0D5C2'}
 };
-state.ventas={campana:'',catalogo:'todos',vista:'clientes',busqueda:'',abiertos:{},config:{},cargado:false};
+// campana + campMarca = campaña activa (una campaña pertenece a UNA revista). catalogo = filtro de marca del selector.
+state.ventas={campana:'',campMarca:'',catalogo:'todos',ultima:{},vista:'clientes',busqueda:'',abiertos:{},config:{},cargado:false};
 state.data.ventas=[];
 let ventaCat='Yanbal';
 let pdfOpts={clientes:true,resumen:true};
@@ -1548,21 +1585,28 @@ function normalizarVenta(r){
   });
 }
 function vCfg(k){return state.ventas.config[k];}
-function vEnviado(c){return vStr(vCfg('enviado:'+c)).toLowerCase()==='si';}
-function vMeta(c){return vNum(vCfg('meta:'+c));}
+function vKey(m,n){return m+'|'+n;}
+function vSplit(k){const i=String(k).indexOf('|');return i<0?['',String(k)]:[String(k).slice(0,i),String(k).slice(i+1)];}
+// Si no hay dato propio de la marca, se usa el formato anterior (solo el nombre) para no perder lo ya guardado
+function vEnviado(m,n){const c=state.ventas.config,k='enviado:'+vKey(m,n);return vStr(k in c?c[k]:c['enviado:'+n]).toLowerCase()==='si';}
+function vMeta(m,n){const c=state.ventas.config,k='meta:'+vKey(m,n);return vNum(k in c?c[k]:c['meta:'+n]);}
+function vEnvAct(){return vEnviado(state.ventas.campMarca,state.ventas.campana);}
+function vMetaAct(){return vMeta(state.ventas.campMarca,state.ventas.campana);}
+function cerrarMenus(){document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));}
 function vSetCfg(k,v){state.ventas.config[k]=v;return apiPost({action:'updateConfig',data:{[k]:v}});}
 
-function ventasCampanas(){
-  const lista=[],visto={};
-  const d=state.data.ventas;
-  for(let i=d.length-1;i>=0;i--){const c=d[i].Campana;if(c&&!visto[c]){visto[c]=1;lista.push(c);}}
-  const actual=state.ventas.campana;
-  if(actual&&!visto[actual])lista.unshift(actual);
-  return lista;
+// Lista de campañas (marca + nombre): las que tienen ventas + las creadas sin ventas. Opcionalmente solo de una marca.
+function ventasCampanas(marca){
+  const v=state.ventas,d=state.data.ventas,lista=[],visto={};
+  const add=(m,n)=>{if(!m||!n)return;const k=vKey(m,n);if(visto[k])return;visto[k]=1;lista.push({marca:m,nombre:n,key:k});};
+  for(let i=d.length-1;i>=0;i--)add(d[i].Catalogo,d[i].Campana);
+  Object.keys(v.config).forEach(k=>{if(k.indexOf('campana:')===0&&vStr(v.config[k]).toLowerCase()==='si'){const p=vSplit(k.slice(8));add(p[0],p[1]);}});
+  if(v.campana&&v.campMarca)add(v.campMarca,v.campana);
+  return marca?lista.filter(c=>c.marca===marca):lista;
 }
-function vRowsCampana(aplicarFiltroCat){
+function vRowsCampana(){
   const v=state.ventas;
-  return state.data.ventas.filter(r=>r.Campana===v.campana&&(!aplicarFiltroCat||v.catalogo==='todos'||r.Catalogo===v.catalogo));
+  return state.data.ventas.filter(r=>r.Campana===v.campana&&r.Catalogo===v.campMarca);
 }
 function vResumen(rows){
   let vendido=0,ganancia=0,porCobrar=0,unidades=0;const cl={};
@@ -1631,8 +1675,11 @@ async function loadVentas(){
   state.data.ventas=(res.data||[]).map(normalizarVenta);
   state.ventas.config=(conf&&conf.data)||{};
   if(!state.ventas.campana){
-    const c=vStr(state.ventas.config.campana_actual).trim();
-    state.ventas.campana=c||(ventasCampanas()[0]||'');
+    const cfg=vStr(state.ventas.config.campana_actual).trim(),lista=ventasCampanas();
+    let sel=null;
+    if(cfg){if(cfg.indexOf('|')>=0){const p=vSplit(cfg);sel=lista.find(c=>c.marca===p[0]&&c.nombre===p[1]);}else sel=lista.find(c=>c.nombre===cfg);}
+    sel=sel||lista[0];
+    if(sel){state.ventas.campana=sel.nombre;state.ventas.campMarca=sel.marca;}
   }
   state.ventas.cargado=true;
   renderVentas();
@@ -1645,18 +1692,23 @@ function renderVentas(){
 }
 function renderVentasTop(){
   const top=document.getElementById('ventas-top');if(!top)return;
-  const v=state.ventas;
-  const camps=ventasCampanas();
-  const todas=vRowsCampana(false),rows=vRowsCampana(true);
-  const r=vResumen(rows),rTodas=vResumen(todas);
-  const meta=vMeta(v.campana),enviado=vEnviado(v.campana);
-  const opts=(camps.length?camps.map(c=>`<option value="${esc(c)}" ${c===v.campana?'selected':''}>${esc(c)}${vEnviado(c)?' ✅':''}</option>`).join(''):'<option value="">Sin campaña</option>')
-    +'<option value="__nueva__">➕ Nueva campaña…</option>';
-  const pct=meta>0?Math.min(100,Math.round(rTodas.vendido/meta*100)):0;
+  const v=state.ventas,filtro=v.catalogo==='todos'?null:v.catalogo;
+  const camps=ventasCampanas(filtro),curKey=v.campana?vKey(v.campMarca,v.campana):'';
+  const rows=vRowsCampana(),r=vResumen(rows);
+  const meta=vMetaAct(),enviado=vEnvAct(),ci=catInfo(v.campMarca);
+  // Selector: solo campañas de la marca elegida (o todas, agrupadas por marca, si el filtro es "Todas")
+  const optHtml=c=>`<option value="${esc(c.key)}" ${c.key===curKey?'selected':''}>${catInfo(c.marca).emoji} ${esc(c.nombre)}${vEnviado(c.marca,c.nombre)?' ✅':''}</option>`;
+  let opts;
+  if(!camps.length)opts=`<option value="">${filtro?'Sin campañas de '+esc(filtro):'Sin campañas'}</option>`;
+  else if(!filtro)opts=ordenarCats([...new Set(camps.map(c=>c.marca))]).map(m=>`<optgroup label="${catInfo(m).emoji} ${esc(m)}">`+camps.filter(c=>c.marca===m).map(optHtml).join('')+'</optgroup>').join('');
+  else opts=camps.map(optHtml).join('');
+  opts+='<option value="__nueva__">➕ Nueva campaña…</option>';
+  const pct=meta>0?Math.min(100,Math.round(r.vendido/meta*100)):0;
+  const hay=!!v.campana;
   top.innerHTML=`
     <div class="v-head">
       <select class="form-input" id="ventas-campana" onchange="ventaCambiarCampana(this.value)">${opts}</select>
-      <div class="actions-menu-wrap">
+      ${hay?`<div class="actions-menu-wrap">
         <div class="icon-btn" onclick="toggleActionsMenu('menu-ventas',event)">⋯</div>
         <div class="actions-menu" id="menu-ventas">
           <div class="actions-menu-item" onclick="ventaAbrirPdf()">📄 PDF del pedido</div>
@@ -1665,10 +1717,14 @@ function renderVentasTop(){
           <div class="actions-menu-divider"></div>
           <div class="actions-menu-item" onclick="ventaToggleEnviado()">${enviado?'↩️ Reabrir pedido':'📤 Marcar pedido enviado'}</div>
           <div class="actions-menu-item" onclick="ventaDefinirMeta()">🎯 ${meta>0?'Cambiar meta':'Definir meta'}</div>
+          <div class="actions-menu-divider"></div>
+          <div class="actions-menu-item" onclick="ventaRenombrarCampana()">✏️ Cambiar nombre</div>
+          ${rows.length?'':'<div class="actions-menu-item danger" onclick="ventaEliminarCampana()">🗑️ Eliminar campaña vacía</div>'}
         </div>
-      </div>
+      </div>`:''}
     </div>
-    <div class="header-gold">
+    ${hay?`<div class="header-gold">
+      <div class="v-brand-tag ${ci.clase}">${ci.emoji} ${esc(v.campMarca)} · ${esc(v.campana)}${enviado?' · ✅ enviado':''}</div>
       <div class="v-sum-grid">
         <div><div class="header-gold-label">💰 Vendido</div><div class="v-sum-val">${vFmt(r.vendido)}</div></div>
         <div><div class="header-gold-label">🌟 Mi ganancia</div><div class="v-sum-val">${vFmt(r.ganancia)}</div></div>
@@ -1677,22 +1733,22 @@ function renderVentasTop(){
       <div class="v-meta">${meta>0
         ?`<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-muted)">🎯 Meta ${vFmt(meta)}</span><span style="color:var(--gold);font-weight:700">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`
         :`<span class="v-meta-link" onclick="ventaDefinirMeta()">🎯 Definir una meta de venta (opcional)</span>`}</div>
-    </div>
+    </div>`:''}
     <div class="filtros">
-      <button class="filtro-btn ${v.catalogo==='todos'?'active':''}" onclick="ventaFiltroCat('todos')">Todos</button>
+      <button class="filtro-btn ${v.catalogo==='todos'?'active':''}" onclick="ventaFiltroCat('todos')">Todas</button>
       <button class="filtro-btn cat-yanbal ${v.catalogo==='Yanbal'?'active':''}" onclick="ventaFiltroCat('Yanbal')">🧡 Yanbal</button>
       <button class="filtro-btn cat-azzorti ${v.catalogo==='Azzorti'?'active':''}" onclick="ventaFiltroCat('Azzorti')">💛 Azzorti</button>
       <button class="filtro-btn cat-leonisa ${v.catalogo==='Leonisa'?'active':''}" onclick="ventaFiltroCat('Leonisa')">❤️ Leonisa</button>
     </div>
-    <div class="v-seg">
+    ${hay?`<div class="v-seg">
       <div class="${v.vista==='clientes'?'active':''}" onclick="ventaVista('clientes')">👥 Clientes</div>
       <div class="${v.vista==='revista'?'active':''}" onclick="ventaVista('revista')">📋 Pedido revista</div>
-    </div>`;
+    </div>`:''}`;
 }
 function renderVentasBody(){
   const body=document.getElementById('ventas-body');if(!body)return;
   const v=state.ventas;
-  if(v.vista==='clientes'&&vRowsCampana(true).length){
+  if(v.vista==='clientes'&&vRowsCampana().length){
     body.innerHTML=`<div class="v-search"><input class="form-input" id="ventas-buscar" placeholder="🔍 Buscar cliente, código o producto..." value="${esc(v.busqueda)}" oninput="ventaBuscar(this.value)"></div><div id="ventas-lista"></div>`;
   }else body.innerHTML='<div id="ventas-lista"></div>';
   renderVentasLista();
@@ -1700,15 +1756,28 @@ function renderVentasBody(){
 function renderVentasLista(){
   if(state.ventas.vista==='clientes')renderVentasClientes();else renderVentasRevista();
 }
-function ventaFiltroCat(c){state.ventas.catalogo=c;renderVentasTop();renderVentasBody();}
+// Al elegir una marca, el selector muestra SOLO las campañas de esa marca y se abre la última que usaste de ella
+function ventaFiltroCat(m){
+  const v=state.ventas;v.catalogo=m;
+  if(m!=='todos'&&v.campMarca!==m){
+    const lista=ventasCampanas(m),prev=v.ultima[m];
+    const sel=(prev&&lista.find(c=>c.nombre===prev))||lista[0];
+    v.campMarca=m;v.campana=sel?sel.nombre:'';v.abiertos={};
+    if(sel)vSetCfg('campana_actual',sel.key);
+  }
+  renderVentasTop();renderVentasBody();
+}
 function ventaVista(vv){state.ventas.vista=vv;renderVentasTop();renderVentasBody();}
 function ventaBuscar(t){state.ventas.busqueda=t;renderVentasLista();}
 
 function vVacio(){
-  const v=state.ventas;
-  if(!v.campana)return`<div class="empty"><div class="empty-icon">🛍️</div><div class="empty-text">Aún no tienes campañas.<br>Crea la primera para empezar a anotar pedidos.</div></div>
-    <button class="btn btn-gold" onclick="ventaCambiarCampana('__nueva__')">➕ Crear campaña</button>`;
-  return`<div class="empty"><div class="empty-icon">🛍️</div><div class="empty-text">Aún no hay ventas en esta campaña${v.catalogo!=='todos'?' ('+esc(v.catalogo)+')':''}.</div></div>
+  const v=state.ventas,f=v.catalogo==='todos'?null:v.catalogo;
+  if(!v.campana){
+    return`<div class="empty"><div class="empty-icon">🛍️</div><div class="empty-text">Aún no tienes campañas${f?' de '+esc(f):''}.<br>Crea la primera para empezar a anotar pedidos.</div></div>
+    <button class="btn btn-gold" onclick="ventaNuevaCampana(${f?"'"+f+"'":'null'})">➕ Crear campaña${f?' de '+esc(f):''}</button>`;
+  }
+  const ci=catInfo(v.campMarca);
+  return`<div class="empty"><div class="empty-icon">🛍️</div><div class="empty-text">Aún no hay ventas en ${ci.emoji} ${esc(v.campMarca)} · ${esc(v.campana)}.</div></div>
     <button class="btn btn-gold" onclick="openVentaForm()">➕ Anotar primera venta</button>`;
 }
 
@@ -1716,7 +1785,7 @@ function vVacio(){
 function renderVentasClientes(){
   const el=document.getElementById('ventas-lista');if(!el)return;
   const v=state.ventas;
-  const rows=vRowsCampana(true);
+  const rows=vRowsCampana();
   if(!rows.length){el.innerHTML=vVacio();return;}
   const q=v.busqueda.trim().toLowerCase();
   let grupos=vAgruparClientes(rows);
@@ -1750,7 +1819,8 @@ function vCardCliente(g){
         <button class="btn btn-outline" data-k="${k}" onclick="ventaAgregarACliente(this.dataset.k)">➕ Producto</button>
         <button class="btn btn-outline" data-k="${k}" onclick="ventaClienteEstado(this.dataset.k,'Entregado')">📦 Entregado</button>
         <button class="btn btn-gold" data-k="${k}" onclick="ventaClienteEstado(this.dataset.k,'Pagado')">✅ Pagado</button>
-      </div></div>`;
+      </div>
+      <button class="btn btn-outline" style="margin-top:8px;padding:10px 4px;font-size:12.5px" data-k="${k}" onclick="ventaMoverCliente(this.dataset.k)">↪️ Mover todo a otra campaña</button></div>`;
   }
   return h+'</div>';
 }
@@ -1763,11 +1833,11 @@ function vLineaHtml(r){
       <div class="v-money">${vFmt(r.Total)}</div>
     </div>
     <div class="v-linea-foot">${vBadgeEstado(r.Estado)}<span class="v-gan">🌟 ${vFmt(r.Ganancia)} (${r.Porcentaje}%)</span>${r.Notas?`<span class="item-sub">📝 ${esc(r.Notas)}</span>`:''}
-      <div class="icon-btn" onclick="ventaEditar('${r.ID}')">✏️</div><div class="icon-btn" onclick="ventaEliminar('${r.ID}')">🗑️</div></div>
+      <div class="icon-btn" onclick="ventaEditar('${r.ID}')">✏️</div><div class="icon-btn" onclick="ventaMoverLinea('${r.ID}')" title="Mover a otra campaña">↪️</div><div class="icon-btn" onclick="ventaEliminar('${r.ID}')">🗑️</div></div>
   </div>`;
 }
 function ventaToggleCliente(k){state.ventas.abiertos[k]=!state.ventas.abiertos[k];renderVentasLista();}
-function vRowsCliente(k){return vRowsCampana(true).filter(r=>r.Cliente.toLowerCase()===k);}
+function vRowsCliente(k){return vRowsCampana().filter(r=>r.Cliente.toLowerCase()===k);}
 function ventaAgregarACliente(k){
   const rows=vRowsCliente(k);
   openVentaForm({cliente:rows.length?rows[0].Cliente:''});
@@ -1788,9 +1858,9 @@ async function ventaClienteEstado(k,estado){
 function renderVentasRevista(){
   const el=document.getElementById('ventas-lista');if(!el)return;
   const v=state.ventas;
-  const rows=vRowsCampana(true);
+  const rows=vRowsCampana();
   if(!rows.length){el.innerHTML=vVacio();return;}
-  const enviado=vEnviado(v.campana);
+  const enviado=vEnvAct();
   const lineas=consolidarPedido(rows,enviado);
   const total=lineas.reduce((s,l)=>s+l.subtotal,0),uds=lineas.reduce((s,l)=>s+l.cantidad,0);
   const reg=lineas.filter(l=>l.registrado).length,pct=lineas.length?Math.round(reg/lineas.length*100):0;
@@ -1828,7 +1898,7 @@ function vRevItem(l){
   </div>`;
 }
 async function ventaToggleRegistrado(key){
-  const l=consolidarPedido(vRowsCampana(true),vEnviado(state.ventas.campana)).find(x=>x.key===key);
+  const l=consolidarPedido(vRowsCampana(),vEnvAct()).find(x=>x.key===key);
   if(!l)return;
   const nuevo=l.registrado?'':'Si',set=new Set(l.ids);
   state.data.ventas.forEach(r=>{if(set.has(r.ID))r.Registrado=nuevo;});
@@ -1849,38 +1919,151 @@ function showInput({title,label,value='',placeholder='',type='text',okLabel='Gua
 function inputConfirmar(){const val=document.getElementById('input-value').value;closeModal('modal-input');if(_inputOk)_inputOk(val);}
 
 function ventaCambiarCampana(val){
-  if(val==='__nueva__'){
-    renderVentasTop();
-    showInput({title:'🛍️ Nueva campaña',label:'Nombre de la campaña',placeholder:'Ej: Campaña 14',okLabel:'Crear',onOk:n=>{
-      n=n.trim();if(!n){showToast('⚠️ Escribe un nombre');return;}
-      state.ventas.campana=n;state.ventas.abiertos={};vSetCfg('campana_actual',n);renderVentas();
-    }});
-    return;
-  }
-  state.ventas.campana=val;state.ventas.abiertos={};vSetCfg('campana_actual',val);renderVentas();
+  const v=state.ventas;
+  if(val==='__nueva__'){renderVentasTop();ventaNuevaCampana(v.catalogo==='todos'?null:v.catalogo);return;}
+  if(!val){renderVentasTop();return;}
+  const p=vSplit(val);v.campMarca=p[0];v.campana=p[1];v.ultima[p[0]]=p[1];v.abiertos={};
+  vSetCfg('campana_actual',val);renderVentas();
+}
+// ── Nueva campaña: primero se elige la revista ──
+let _campMarca='';
+function ventaNuevaCampana(marcaPref){
+  cerrarMenus();_campMarca=marcaPref||'';
+  document.getElementById('campana-nombre').value='';
+  campanaPintarMarca();openModal('modal-campana');
+}
+function campanaSetMarca(m){_campMarca=m;campanaPintarMarca();}
+function campanaPintarMarca(){Object.keys(CATALOGOS).forEach(c=>{const e=document.getElementById('camp-btn-'+c);if(e)e.classList.toggle('active',c===_campMarca);});}
+async function campanaCrear(){
+  const n=vget('campana-nombre').trim().replace(/\|/g,'');
+  if(!_campMarca){showToast('⚠️ Elige la revista: Yanbal, Azzorti o Leonisa');return;}
+  if(!n){showToast('⚠️ Escribe el nombre de la campaña');return;}
+  const v=state.ventas,m=_campMarca,key=vKey(m,n);
+  const ya=ventasCampanas(m).find(c=>c.nombre.toLowerCase()===n.toLowerCase());
+  closeModal('modal-campana');
+  v.campMarca=m;v.campana=ya?ya.nombre:n;v.ultima[m]=v.campana;v.abiertos={};
+  if(v.catalogo!=='todos')v.catalogo=m;
+  if(ya){showToast('Esa campaña ya existía: la abrí');vSetCfg('campana_actual',ya.key);renderVentas();return;}
+  vSetCfg('campana:'+key,'Si');vSetCfg('campana_actual',key);
+  showToast('✅ Campaña creada');renderVentas();
 }
 function ventaDefinirMeta(){
-  document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));
-  const c=state.ventas.campana;if(!c){showToast('⚠️ Primero crea una campaña');return;}
-  showInput({title:'🎯 Meta de venta',label:`Meta para "${c}" (en pesos, 0 para quitarla)`,value:vMeta(c)||'',placeholder:'Ej: 2000000',type:'number',onOk:n=>{
-    vSetCfg('meta:'+c,vNum(n));renderVentasTop();showToast('🎯 Meta guardada');
+  cerrarMenus();const v=state.ventas;if(!v.campana){showToast('⚠️ Primero crea una campaña');return;}
+  const m=v.campMarca,c=v.campana;
+  showInput({title:'🎯 Meta de venta',label:`Meta para "${c}" · ${m} (en pesos, 0 para quitarla)`,value:vMeta(m,c)||'',placeholder:'Ej: 2000000',type:'number',onOk:n=>{
+    vSetCfg('meta:'+vKey(m,c),vNum(n));renderVentasTop();showToast('🎯 Meta guardada');
   }});
 }
 function ventaToggleEnviado(){
-  document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));
-  const c=state.ventas.campana;if(!c){showToast('⚠️ Primero crea una campaña');return;}
-  const ya=vEnviado(c);
+  cerrarMenus();const v=state.ventas;if(!v.campana){showToast('⚠️ Primero crea una campaña');return;}
+  const m=v.campMarca,c=v.campana,ya=vEnviado(m,c);
   showConfirm({icon:ya?'↩️':'📤',msg:ya?`¿Reabrir "${c}"?`:`¿Marcar "${c}" como enviado?`,
     sub:ya?'Los productos nuevos dejarán de marcarse como agregados después del envío.':'Desde ahora, todo producto nuevo se marcará como NUEVO para que no olvides registrarlo en la revista.',
     okLabel:ya?'Reabrir':'Sí, enviado',onOk:async()=>{
       showSaving('💾 Guardando...');
       if(!ya){
-        const ids=state.data.ventas.filter(r=>r.Campana===c&&r.Post_Envio==='Si').map(r=>r.ID);
+        const ids=state.data.ventas.filter(r=>r.Campana===c&&r.Catalogo===m&&r.Post_Envio==='Si').map(r=>r.ID);
         if(ids.length){await apiPost({action:'updateVarios',sheet:'Ventas',ids,data:{Post_Envio:''}});const s=new Set(ids);state.data.ventas.forEach(r=>{if(s.has(r.ID))r.Post_Envio='';});}
       }
-      await vSetCfg('enviado:'+c,ya?'':'Si');
+      await vSetCfg('enviado:'+vKey(m,c),ya?'':'Si');
       hideSaving();showToast(ya?'↩️ Pedido reabierto':'📤 Pedido marcado como enviado');renderVentas();
   }});
+}
+// ── Cambiar nombre / unir ──
+async function ventaLimpiarConfigCampana(m,n){
+  const k=vKey(m,n),c=state.ventas.config;
+  if(('campana:'+k) in c&&vStr(c['campana:'+k])!=='')await vSetCfg('campana:'+k,'');
+  if(vEnviado(m,n)||vStr(c['enviado:'+k])!=='')await vSetCfg('enviado:'+k,'');
+  if(vMeta(m,n)>0||vStr(c['meta:'+k])!=='')await vSetCfg('meta:'+k,'');
+}
+function ventaRenombrarCampana(){
+  cerrarMenus();const v=state.ventas;if(!v.campana){showToast('⚠️ Primero crea una campaña');return;}
+  showInput({title:'✏️ Cambiar nombre',label:`Nuevo nombre para "${v.campana}" (${v.campMarca})`,value:v.campana,placeholder:'Ej: Campaña 14',okLabel:'Cambiar',onOk:n=>ventaAplicarRenombre(n)});
+}
+async function ventaAplicarRenombre(n){
+  const v=state.ventas,m=v.campMarca,viejo=v.campana;
+  n=String(n||'').trim().replace(/\|/g,'');
+  if(!n){showToast('⚠️ Escribe un nombre');return;}
+  if(n===viejo)return;
+  const ids=vRowsCampana().map(r=>r.ID);
+  const choque=ventasCampanas(m).find(c=>c.nombre.toLowerCase()===n.toLowerCase()&&c.nombre!==viejo);
+  if(choque){
+    showConfirm({icon:'🔀',msg:`Ya existe "${choque.nombre}"`,sub:`Los productos de "${viejo}" se unirán a esa campaña de ${m}. ¿Continuar?`,okLabel:'Sí, unir',onOk:async()=>{
+      showSaving('🔀 Uniendo campañas...');
+      const ok=ids.length?await ventaMoverIds(ids,{marca:m,nombre:choque.nombre}):true;
+      if(ok)await ventaLimpiarConfigCampana(m,viejo);
+      hideSaving();
+      if(!ok){showToast('❌ No se pudo unir');return;}
+      v.campana=choque.nombre;v.ultima[m]=choque.nombre;v.abiertos={};vSetCfg('campana_actual',vKey(m,choque.nombre));
+      showToast('🔀 Campañas unidas');renderVentas();
+    }});
+    return;
+  }
+  showSaving('✏️ Cambiando nombre...');
+  if(ids.length){
+    const res=await apiPost({action:'updateVarios',sheet:'Ventas',ids,data:{Campana:n}});
+    if(res.error){hideSaving();showToast('❌ No se pudo cambiar el nombre');return;}
+    const set=new Set(ids);state.data.ventas.forEach(r=>{if(set.has(r.ID))r.Campana=n;});
+  }
+  const env=vEnviado(m,viejo),meta=vMeta(m,viejo);
+  await ventaLimpiarConfigCampana(m,viejo);
+  await vSetCfg('campana:'+vKey(m,n),'Si');
+  if(env)await vSetCfg('enviado:'+vKey(m,n),'Si');
+  if(meta>0)await vSetCfg('meta:'+vKey(m,n),meta);
+  v.campana=n;v.ultima[m]=n;v.abiertos={};await vSetCfg('campana_actual',vKey(m,n));
+  hideSaving();showToast('✏️ Nombre cambiado');renderVentas();
+}
+function ventaEliminarCampana(){
+  cerrarMenus();const v=state.ventas;if(!v.campana)return;
+  if(vRowsCampana().length){showToast('⚠️ Tiene ventas: muévelas o elimínalas primero');return;}
+  const m=v.campMarca,n=v.campana;
+  showConfirm({icon:'🗑️',msg:`¿Eliminar la campaña "${n}"?`,sub:`Está vacía (${m}). Esta acción no se puede deshacer.`,okLabel:'Eliminar',okClass:'btn-danger',onOk:async()=>{
+    showSaving('🗑️ Eliminando...');
+    await ventaLimpiarConfigCampana(m,n);
+    v.campana='';v.campMarca=m;
+    let sel=ventasCampanas(m)[0];if(!sel&&v.catalogo==='todos')sel=ventasCampanas()[0];
+    if(sel){v.campMarca=sel.marca;v.campana=sel.nombre;}
+    v.abiertos={};await vSetCfg('campana_actual',sel?sel.key:'');
+    hideSaving();showToast('🗑️ Campaña eliminada');renderVentas();
+  }});
+}
+// ── Mover productos a otra campaña (otra revista incluida) ──
+async function ventaMoverIds(ids,dest){
+  const data={Catalogo:dest.marca,Campana:dest.nombre,Registrado:'',Post_Envio:vEnviado(dest.marca,dest.nombre)?'Si':''};
+  const res=await apiPost({action:'updateVarios',sheet:'Ventas',ids,data});
+  if(res.error)return false;
+  const set=new Set(ids);state.data.ventas.forEach(r=>{if(set.has(r.ID))Object.assign(r,data);});
+  return true;
+}
+let _mover={ids:[]};
+function ventaMoverLinea(id){const r=state.data.ventas.find(x=>x.ID===id);if(!r)return;ventaAbrirMover([id],(r.Descripcion||r.Codigo)+' · '+r.Cliente);}
+function ventaMoverCliente(k){const rows=vRowsCliente(k);if(!rows.length)return;ventaAbrirMover(rows.map(r=>r.ID),'Todos los productos de '+rows[0].Cliente+' ('+rows.length+')');}
+function ventaAbrirMover(ids,desc){
+  const v=state.ventas,cur=vKey(v.campMarca,v.campana);
+  const lista=ventasCampanas().filter(c=>c.key!==cur);
+  if(!lista.length){showToast('⚠️ No hay otra campaña. Crea primero la campaña de destino');return;}
+  _mover={ids};
+  document.getElementById('mover-desc').textContent=desc;
+  document.getElementById('mover-destino').innerHTML=ordenarCats([...new Set(lista.map(c=>c.marca))]).map(m=>`<optgroup label="${catInfo(m).emoji} ${esc(m)}">`+lista.filter(c=>c.marca===m).map(c=>`<option value="${esc(c.key)}">${catInfo(c.marca).emoji} ${esc(c.nombre)}${vEnviado(c.marca,c.nombre)?' ✅':''}</option>`).join('')+'</optgroup>').join('');
+  ventaMoverAviso();openModal('modal-mover');
+}
+function ventaMoverAviso(){
+  const d=vSplit(vget('mover-destino')),v=state.ventas,msgs=[];
+  if(d[0]!==v.campMarca)msgs.push('⚠️ Es de otra revista ('+d[0]+'). Revisa el código y la página'+(_mover.ids.length>1?' de cada producto.':' después de mover.'));
+  if(vEnviado(d[0],d[1]))msgs.push('📤 Esa campaña ya se envió: los productos aparecerán como NUEVO.');
+  msgs.push('Los productos quedarán sin marcar como registrados en la revista.');
+  document.getElementById('mover-aviso').innerHTML=msgs.map(x=>'<div>'+esc(x)+'</div>').join('');
+}
+async function ventaMoverConfirmar(){
+  const val=vget('mover-destino');if(!val)return;
+  const d=vSplit(val),origen=state.ventas.campMarca,ids=_mover.ids.slice();
+  closeModal('modal-mover');showSaving('↪️ Moviendo...');
+  const ok=await ventaMoverIds(ids,{marca:d[0],nombre:d[1]});
+  hideSaving();
+  if(!ok){showToast('❌ No se pudo mover');return;}
+  showToast('↪️ Movido a '+catInfo(d[0]).emoji+' '+d[1]);
+  renderVentas();
+  if(d[0]!==origen&&ids.length===1)ventaEditar(ids[0]);
 }
 
 // ── Formulario de venta ──────────────────────────
@@ -1889,13 +2072,19 @@ function ventaUltimoPct(c){
   for(let i=d.length-1;i>=0;i--){if(d[i].Catalogo===c&&d[i].Porcentaje>0)return d[i].Porcentaje;}
   return'';
 }
-function ventaPintarCat(){
-  Object.keys(CATALOGOS).forEach(c=>document.getElementById('cat-btn-'+c).classList.toggle('active',c===ventaCat));
+function ventaPintarMarca(){
+  const ci=catInfo(ventaCat),b=document.getElementById('venta-marca-badge');
+  b.className='v-marca-badge '+ci.clase;b.textContent=ci.emoji+' '+ventaCat;
 }
-function ventaSetCat(c){
-  ventaCat=c;ventaPintarCat();
+function ventaLlenarCampanasForm(lista,selKey){
+  document.getElementById('venta-campana').innerHTML=lista.map(c=>`<option value="${esc(c.key)}" ${c.key===selKey?'selected':''}>${catInfo(c.marca).emoji} ${esc(c.nombre)}</option>`).join('');
+}
+// La revista del producto la define la campaña elegida
+function ventaCampanaForm(){
+  const val=vget('venta-campana');if(!val)return;
+  ventaCat=vSplit(val)[0];ventaPintarMarca();
   const pct=document.getElementById('venta-pct');
-  if(!vget('venta-id')&&pct.dataset.manual!=='1'){pct.value=ventaUltimoPct(c);}
+  if(!vget('venta-id')&&pct.dataset.manual!=='1')pct.value=ventaUltimoPct(ventaCat);
   ventaCalc();
 }
 function ventaCalc(){
@@ -1907,17 +2096,22 @@ function ventaCalc(){
 function ventaLlenarListas(){
   const cli=[...new Set(state.data.ventas.map(r=>r.Cliente).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
   document.getElementById('dl-clientes').innerHTML=cli.map(c=>`<option value="${esc(c)}">`).join('');
-  document.getElementById('dl-campanas').innerHTML=ventasCampanas().map(c=>`<option value="${esc(c)}">`).join('');
 }
 function ventaCampoManual(el){el.dataset.auto='';}
-function openVentaDesdeMenu(){closeModal('modal-add');openVentaForm();}
+async function openVentaDesdeMenu(){
+  closeModal('modal-add');
+  if(!state.ventas.cargado){showSaving('Cargando...');await loadVentas();hideSaving();}
+  if(!state.ventas.cargado){showToast('❌ No se pudo cargar Ventas');return;}
+  openVentaForm();
+}
 function openVentaForm(pref){
-  pref=pref||{};const v=state.ventas;
-  document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));
+  pref=pref||{};const v=state.ventas;cerrarMenus();
+  const filtro=v.catalogo==='todos'?null:v.catalogo,lista=ventasCampanas(filtro);
+  if(!lista.length){showToast('⚠️ Primero crea una campaña'+(filtro?' de '+filtro:''));ventaNuevaCampana(filtro);return;}
+  const cur=v.campana?vKey(v.campMarca,v.campana):'',sel=lista.some(c=>c.key===cur)?cur:lista[0].key;
   document.getElementById('venta-id').value='';
   document.getElementById('venta-modal-title').textContent='🛍️ Nueva Venta';
-  ventaCat=pref.catalogo||(v.catalogo!=='todos'?v.catalogo:ventaCat)||'Yanbal';
-  document.getElementById('venta-campana').value=v.campana||'';
+  ventaLlenarCampanasForm(lista,sel);ventaCat=vSplit(sel)[0];
   document.getElementById('venta-cliente').value=pref.cliente||'';
   ['venta-codigo','venta-descripcion','venta-pagina','venta-valor','venta-notas'].forEach(id=>{const e=document.getElementById(id);e.value='';e.dataset.auto='';});
   document.getElementById('venta-cantidad').value='1';
@@ -1925,15 +2119,17 @@ function openVentaForm(pref){
   const pct=document.getElementById('venta-pct');pct.dataset.manual='';pct.value=ventaUltimoPct(ventaCat);
   document.getElementById('venta-hint').style.display='none';
   document.getElementById('btn-venta-otro').style.display='';
-  ventaLlenarListas();ventaPintarCat();ventaCalc();
+  ventaLlenarListas();ventaPintarMarca();ventaCalc();
   openModal('modal-venta');
 }
 function ventaEditar(id){
   const r=state.data.ventas.find(x=>x.ID===id);if(!r)return;
   ventaCat=r.Catalogo||'Yanbal';
+  const lista=ventasCampanas(ventaCat),k=vKey(ventaCat,r.Campana);
+  if(!lista.some(c=>c.key===k))lista.push({marca:ventaCat,nombre:r.Campana,key:k});
   document.getElementById('venta-id').value=r.ID;
   document.getElementById('venta-modal-title').textContent='✏️ Editar Venta';
-  document.getElementById('venta-campana').value=r.Campana;
+  ventaLlenarCampanasForm(lista,k);
   document.getElementById('venta-cliente').value=r.Cliente;
   document.getElementById('venta-codigo').value=r.Codigo;
   document.getElementById('venta-descripcion').value=r.Descripcion;
@@ -1946,7 +2142,7 @@ function ventaEditar(id){
   ['venta-codigo','venta-descripcion','venta-pagina','venta-valor'].forEach(i=>document.getElementById(i).dataset.auto='');
   document.getElementById('venta-hint').style.display='none';
   document.getElementById('btn-venta-otro').style.display='none';
-  ventaLlenarListas();ventaPintarCat();ventaCalc();
+  ventaLlenarListas();ventaPintarMarca();ventaCalc();
   openModal('modal-venta');
 }
 // Si el código ya se usó antes, trae descripción, página y último precio (editables)
@@ -1972,10 +2168,11 @@ function ventaLimpiarParaOtro(){
 }
 async function saveVenta(otro,forzar){
   const id=vget('venta-id');
-  const campana=vget('venta-campana').trim(),cliente=vget('venta-cliente').trim(),codigo=vget('venta-codigo').trim();
+  const selC=vget('venta-campana'),cliente=vget('venta-cliente').trim(),codigo=vget('venta-codigo').trim();
   const desc=vget('venta-descripcion').trim(),pagina=vget('venta-pagina').trim();
   const cant=vNum(vget('venta-cantidad')),valor=vNum(vget('venta-valor')),pctStr=vget('venta-pct').trim();
-  if(!campana){showToast('⚠️ Escribe la campaña');return;}
+  if(!selC){showToast('⚠️ Elige la campaña');return;}
+  const pc=vSplit(selC),marca=pc[0],campana=pc[1];ventaCat=marca;
   if(!cliente){showToast('⚠️ Escribe el nombre del cliente');return;}
   if(!codigo){showToast('⚠️ Escribe el código del producto');return;}
   if(cant<=0){showToast('⚠️ La cantidad debe ser mayor a 0');return;}
@@ -1988,12 +2185,12 @@ async function saveVenta(otro,forzar){
   const pct=vNum(pctStr),total=cant*valor,gan=Math.round(total*pct/100);
   const data={Catalogo:ventaCat,Campana:campana,Cliente:cliente,Codigo:codigo,Descripcion:desc,Pagina:pagina,Cantidad:cant,Valor_Unitario:valor,Total:total,Porcentaje:pct,Ganancia:gan,Estado:vget('venta-estado'),Notas:vget('venta-notas').trim()};
   if(!id){
-    data.Fecha=hoyLocal();data.Registrado='';data.Post_Envio=vEnviado(campana)?'Si':'';
+    data.Fecha=hoyLocal();data.Registrado='';data.Post_Envio=vEnviado(marca,campana)?'Si':'';
   }else{
     const o=state.data.ventas.find(r=>r.ID===id);
     // Si cambia lo que se pide a la empresa, hay que volver a registrarlo
     if(o&&o.Registrado==='Si'&&(o.Catalogo!==ventaCat||o.Campana!==campana||o.Codigo.toLowerCase()!==codigo.toLowerCase()||o.Cantidad!==cant||o.Valor_Unitario!==valor)){
-      data.Registrado='';if(vEnviado(campana))data.Post_Envio='Si';
+      data.Registrado='';if(vEnviado(marca,campana))data.Post_Envio='Si';
     }
   }
   showSaving();
@@ -2001,7 +2198,7 @@ async function saveVenta(otro,forzar){
   hideSaving();
   if(res.error){showToast('❌ Error guardando');return;}
   showToast(id?'✅ Venta actualizada':'✅ Producto guardado');
-  if(state.ventas.campana!==campana){state.ventas.campana=campana;state.ventas.abiertos={};vSetCfg('campana_actual',campana);}
+  if(!id&&(state.ventas.campana!==campana||state.ventas.campMarca!==marca)){state.ventas.campMarca=marca;state.ventas.campana=campana;state.ventas.ultima[marca]=campana;state.ventas.abiertos={};vSetCfg('campana_actual',vKey(marca,campana));}
   state.ventas.abiertos[cliente.toLowerCase()]=true;
   if(otro&&!id)ventaLimpiarParaOtro();else closeModal('modal-venta');
   await loadVentas();
@@ -2224,17 +2421,17 @@ async function ventaTarjetaCompartir(){
 function ventaTarjetaGuardar(){if(!_tarjeta.blob)return;descargarBlob(_tarjeta.blob,_tarjeta.nombre);showToast('⬇️ Tarjeta guardada');}
 
 function ventaMensajeResumen(){
-  const v=state.ventas,rows=vRowsCampana(false),r=vResumen(rows),meta=vMeta(v.campana);
-  let t='📊 *Resumen '+v.campana+'*\n💰 Vendido: '+vFmt(r.vendido)+'\n🌟 Mi ganancia: '+vFmt(r.ganancia)+'\n📦 Por cobrar: '+vFmt(r.porCobrar)+'\n👥 Clientes: '+r.clientes+' · Unidades: '+r.unidades;
+  const v=state.ventas,rows=vRowsCampana(),r=vResumen(rows),meta=vMetaAct();
+  let t='📊 *Resumen '+catInfo(v.campMarca).emoji+' '+v.campMarca+' · '+v.campana+'*\n💰 Vendido: '+vFmt(r.vendido)+'\n🌟 Mi ganancia: '+vFmt(r.ganancia)+'\n📦 Por cobrar: '+vFmt(r.porCobrar)+'\n👥 Clientes: '+r.clientes+' · Unidades: '+r.unidades;
   const cats=ordenarCats([...new Set(rows.map(x=>x.Catalogo))]);
   if(cats.length>1)cats.forEach(c=>{t+='\n'+catInfo(c).emoji+' '+c+': '+vFmt(rows.filter(x=>x.Catalogo===c).reduce((s,x)=>s+x.Total,0));});
   if(meta>0)t+='\n🎯 Meta: '+vFmt(meta)+' ('+Math.min(100,Math.round(r.vendido/meta*100))+'%)';
-  t+='\nPedido: '+(vEnviado(v.campana)?'enviado ✅':'sin enviar');
+  t+='\nPedido: '+(vEnvAct()?'enviado ✅':'sin enviar');
   return t;
 }
 function ventaResumenWhatsApp(){
   document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));
-  if(!vRowsCampana(false).length){showToast('⚠️ Aún no hay ventas en esta campaña');return;}
+  if(!vRowsCampana().length){showToast('⚠️ Aún no hay ventas en esta campaña');return;}
   abrirWhatsApp(ventaMensajeResumen());
 }
 
@@ -2247,12 +2444,12 @@ function descargarBlob(blob,nombre){
 function vSlug(s){return String(s||'campana').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'campana';}
 function ventaCsv(){
   document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));
-  const rows=vRowsCampana(false);
+  const rows=vRowsCampana();
   if(!rows.length){showToast('⚠️ Aún no hay ventas en esta campaña');return;}
   const cols=[['Fecha','Fecha'],['Catalogo','Catálogo'],['Campana','Campaña'],['Cliente','Cliente'],['Pagina','Página'],['Codigo','Código'],['Descripcion','Descripción'],['Cantidad','Cantidad'],['Valor_Unitario','Valor unitario'],['Total','Total'],['Porcentaje','% ganancia'],['Ganancia','Ganancia'],['Estado','Estado'],['Registrado','Registrado en revista']];
   const cel=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
   const lineas=[cols.map(c=>cel(c[1])).join(';')].concat(rows.map(r=>cols.map(c=>cel(c[0]==='Registrado'?(r.Registrado==='Si'?'Sí':''):r[c[0]])).join(';')));
-  descargarBlob(new Blob(['\uFEFF'+lineas.join('\r\n')],{type:'text/csv;charset=utf-8'}),'Ventas_'+vSlug(state.ventas.campana)+'.csv');
+  descargarBlob(new Blob(['\uFEFF'+lineas.join('\r\n')],{type:'text/csv;charset=utf-8'}),'Ventas_'+vSlug(state.ventas.campMarca)+'_'+vSlug(state.ventas.campana)+'.csv');
   showToast('⬇️ CSV descargado');
 }
 
@@ -2355,7 +2552,7 @@ function construirPdf(doc,d,opts){
 // </PDF_BUILDER>
 
 function ventaDatosPdf(){
-  const v=state.ventas,rows=vRowsCampana(false),enviado=vEnviado(v.campana);
+  const v=state.ventas,rows=vRowsCampana(),enviado=vEnvAct();
   const lineas=consolidarPedido(rows,enviado);
   const grupos=ordenarCats([...new Set(lineas.map(l=>l.catalogo))]).map(c=>{
     const ls=lineas.filter(l=>l.catalogo===c);
@@ -2367,7 +2564,7 @@ function ventaDatosPdf(){
     total:g.rows.reduce((s,r)=>s+r.Total,0),
     porCobrar:g.rows.filter(r=>r.Estado!=='Pagado').reduce((s,r)=>s+r.Total,0)
   }));
-  return{campana:v.campana,fecha:fmtDate(hoyLocal()),enviado,meta:vMeta(v.campana),grupos,clientes,resumen:vResumen(rows)};
+  return{campana:v.campana,fecha:fmtDate(hoyLocal()),enviado,meta:vMetaAct(),grupos,clientes,resumen:vResumen(rows)};
 }
 let _pdfLibsOk=false,_pdfLibsPromise=null;
 function cargarScript(urls){
@@ -2394,9 +2591,9 @@ function cargarPdfLibs(){
 }
 function ventaAbrirPdf(){
   document.querySelectorAll('.actions-menu.open').forEach(m=>m.classList.remove('open'));
-  if(!vRowsCampana(false).length){showToast('⚠️ Aún no hay ventas en esta campaña');return;}
+  if(!vRowsCampana().length){showToast('⚠️ Aún no hay ventas en esta campaña');return;}
   pdfOpts={clientes:true,resumen:true};pdfPintarOpts();
-  document.getElementById('pdf-campana').textContent=state.ventas.campana;
+  document.getElementById('pdf-campana').textContent=state.ventas.campMarca+' · '+state.ventas.campana;
   openModal('modal-pdf');
   cargarPdfLibs().catch(()=>{}); // precarga para que compartir responda al instante
 }
@@ -2413,7 +2610,7 @@ async function ventaGenerarPdf(modo){
     const{jsPDF}=window.jspdf;
     const doc=new jsPDF({unit:'mm',format:'a4'});
     construirPdf(doc,ventaDatosPdf(),pdfOpts);
-    const nombre='Pedido_'+vSlug(state.ventas.campana)+'.pdf';
+    const nombre='Pedido_'+vSlug(state.ventas.campMarca)+'_'+vSlug(state.ventas.campana)+'.pdf';
     const blob=doc.output('blob');
     hideSaving();
     if(modo==='compartir'&&navigator.canShare&&navigator.share){
